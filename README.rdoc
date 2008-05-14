@@ -7,8 +7,8 @@ some of the bloat that sometimes results from properly specing your classes and 
 
 Obviously you'll need to be using RSpec[http://github.com/dchelimsky/rspec/tree/master] and
 Rspec-Rails[http://github.com/dchelimsky/rspec-rails/tree/master] as your testing framework.
-To benefit from Skinny Spec's scaffolding, you'll need to be using make_resourceful as well.
-I've got plans to add a more generic Rails' scaffolding but I have <i>lots</i> of plans so
+To benefit from Skinny Spec's scaffolding, you'll need to be using make_resourceful and Haml
+as well. I've got plans to add more generic Rails' scaffolding but I have <i>lots</i> of plans so
 don't hold your breath.
 
 In addition, Skinny Spec uses Ruby2Ruby to make nicer expectation messages and you'll want to
@@ -25,7 +25,7 @@ part. Sweet!
 
 The simplest way to use Skinny Specs is to generate a resource scaffold:
 
-  script/generate skinny_scaffold Foo
+  script/generate skinny_scaffold User
 
 This command takes the usual complement of attribute definitions like
 <tt>script/generate scaffold</tt>. Then have a look at the generated files (particularly the
@@ -35,20 +35,20 @@ specs) to see what's new and different with Skinny Spec.
 
 Let's look at the controller specs.
 
-  describe FoosController do
+  describe UsersController do
     def valid_attributes(args = {})
       {
-        # Add valid attributes for the your params[:foo] here!
+        # Add valid attributes for the your params[:user] here!
       }.merge(args)
     end
 
     describe "GET :index" do
       before(:each) do
-        @foos = stub_index(Foo)
+        @users = stub_index(User)
       end
 
-      it_should_find :foos
-      it_should_assign :foos
+      it_should_find :users
+      it_should_assign :users
       it_should_render :template, "index"
     end
     
@@ -57,12 +57,12 @@ Let's look at the controller specs.
     describe "POST :create" do
       describe "when successful" do
         before(:each) do
-          @foo = stub_create(Foo)
+          @user = stub_create(User)
         end
 
-        it_should_initialize :foo
-        it_should_save :foo
-        it_should_redirect_to { foo_url(@foo) }
+        it_should_initialize :user
+        it_should_save :user
+        it_should_redirect_to { user_url(@user) }
       end
     
     # ...
@@ -89,9 +89,9 @@ instead of the usual example (read: "it") blocks. Note that none of these method
 instance variables defined in the "before" block because they are all nil at the example block
 level. Let's look at a sample method to see how it works:
 
-  it_should_find :foos
+  it_should_find :users
 
-This wraps an expectation that <tt>Foo.should_receive(:find).with(:all)</tt>. Using this helper
+This wraps an expectation that <tt>User.should_receive(:find).with(:all)</tt>. Using this helper
 at the example group level saves us three lines over using an example block. (If this isn't
 significant to you, this is probably the wrong plugin for you as well. Sorry.) You can add
 more detailed arguments to that find. Check the documentation for <tt>it_should_find</tt> for
@@ -109,9 +109,9 @@ example group level spec.
 
 Now let's move to the view specs!
 
-  describe "/foos/form.html.haml" do
+  describe "/users/form.html.haml" do
     before(:each) do
-      @foo = mock_and_assign(Foo, :stub => {
+      @user = mock_and_assign(User, :stub => {
         :name => "foo",
         :birthday => 1.week.ago,
         :adult => false
@@ -119,16 +119,16 @@ Now let's move to the view specs!
     end
 
     it "should use form_for to generate the proper form action and options" do
-      template.should_receive(:form_for).with(@foo)
+      template.should_receive(:form_for).with(@user)
       do_render
     end
 
-    it_should_allow_editing :foo, :name
-    it_should_allow_editing :foo, :birthday
-    it_should_allow_editing :foo, :adult
+    it_should_allow_editing :user, :name
+    it_should_allow_editing :user, :birthday
+    it_should_allow_editing :user, :adult
 
-    it_should_link_to_show :foo
-    it_should_link_to { foos_path }
+    it_should_link_to_show :user
+    it_should_link_to { users_path }
   end
 
 Like the special <tt>stub_index</tt> methods in the controller
@@ -153,14 +153,14 @@ it is customarily stated.
 There's not a lot that Skinny Spec does here besides add a matcher for the various ActiveRecord
 associations. On the example group level you call them like:
 
-  it_should_belong_to :foo
-  it_should_have_many :bars
+  it_should_belong_to :manager
+  it_should_have_many :clients
   
 Within an example you can call them on either the class or the instance setup in the
 "before" block. These are equivalent:
 
-  @foo.should belong_to(:bar)
-  Foo.should belong_to(:bar)
+  @user.should belong_to(:group)
+  User.should belong_to(:group)
   
 Please consult the documentation for more information.
 
