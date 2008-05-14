@@ -33,7 +33,41 @@ specs) to see what's new and different with Skinny Spec.
 
 === Controller Specs
 
-Let's look at the controller specs. First thing you should see is a method definition for 
+Let's look at the controller specs.
+
+  describe FoosController do
+    def valid_attributes(args = {})
+      {
+        # Add valid attributes for the your params[:foo] here!
+      }.merge(args)
+    end
+
+    describe "GET :index" do
+      before(:each) do
+        @foos = stub_index(Foo)
+      end
+
+      it_should_find :foos
+      it_should_assign :foos
+      it_should_render :template, "index"
+    end
+    
+    # ...
+
+    describe "POST :create" do
+      describe "when successful" do
+        before(:each) do
+          @foo = stub_create(Foo)
+        end
+
+        it_should_initialize :foo
+        it_should_save :foo
+        it_should_redirect_to { foo_url(@foo) }
+      end
+    
+    # ...
+
+First thing you should see is a method definition for 
 <tt>valid_attributes</tt>. This will be used later by the <tt>create</tt> and <tt>update</tt>
 specs to more accurately represent how the controller works in actual practice by supplying
 somewhat real data for the <tt>params</tt> coming from the HTML forms.
@@ -73,13 +107,37 @@ example group level spec.
 
 === View Specs
 
-Now let's move to the view specs! Like the special <tt>stub_index</tt> methods in the controller
+Now let's move to the view specs!
+
+  describe "/foos/form.html.haml" do
+    before(:each) do
+      @foo = mock_and_assign(Foo, :stub => {
+        :name => "foo",
+        :birthday => 1.week.ago,
+        :adult => false
+      })
+    end
+
+    it "should use form_for to generate the proper form action and options" do
+      template.should_receive(:form_for).with(@foo)
+      do_render
+    end
+
+    it_should_allow_editing :foo, :name
+    it_should_allow_editing :foo, :birthday
+    it_should_allow_editing :foo, :adult
+
+    it_should_link_to_show :foo
+    it_should_link_to { foos_path }
+  end
+
+Like the special <tt>stub_index</tt> methods in the controller
 specs, the view specs have a shorthand mock and stub helpers: <tt>mock_and_assign</tt> and
 <tt>mock_and_assign_collection</tt>. These are well documented so please check them out.
 
-There are also some really nice helper methods that I'd like point out. First is <tt>it_should_link_to_<i>controller_method</i></tt>. These methods (there's one each for
+There are also some really nice helper methods that I'd like point out. One is <tt>it_should_link_to_<i>controller_method</i></tt>. These methods (there's one each for
 <tt>new</tt>, <tt>edit</tt>, <tt>show</tt>, and <tt>delete</tt>) point to instance variables
-which you should be created in the "before" blocks with <tt>mock_and_assign</tt>. Second is
+which you should be created in the "before" blocks with <tt>mock_and_assign</tt>. The other is
 <tt>it_should_allow_editing</tt> which is likewise covered extensively in the documentation and
 I will just point out here that, like <tt>it_should_link_to_edit</tt> and such, it takes a
 symbol for the name of the instance variable it refers to and <i>additionally</i> takes
