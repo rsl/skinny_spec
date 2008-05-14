@@ -90,7 +90,7 @@ for the name of the template and calling <tt>render @that_template</tt> you can 
 <tt>do_render</tt> which takes the name of the template from the outermost example group where
 it is customarily stated.
 
-== Model Specs
+=== Model Specs
 
 There's not a lot that Skinny Spec does here besides add a matcher for the various ActiveRecord
 associations. On the example group level you call them like:
