@@ -166,7 +166,11 @@ module LuckySneaks
     
   private
     def class_or_instance
-      class_for(self.class.description_text) || instance_for(self.class.description_text)
+      @model_spec_class_or_instance ||= class_for(self.class.description_text) || instance
+    end
+    
+    def instance
+      @model_spec_instance ||= instance_for(self.class.description_text)
     end
     
     # These methods are designed to be used at the example group [read: "describe"] level
@@ -215,6 +219,27 @@ module LuckySneaks
       def it_should_have_and_belong_to_many(models)
         it "should have and belong to many #{models}" do
           class_or_instance.should have_and_belong_to_many(models)
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd has <tt>validates_presence_of</tt>
+      # the specified attribute. Takes an optional custom message to match the one in the model's
+      # validation.
+      def it_should_validate_presence_of(attribute, message = "can't be blank")
+        it "should not be valid if #{attribute} is blank" do
+          instance.attributes = valid_attributes.except(attribute)
+          instance.errors_on(attribute).should include(message)
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd doesn't allow mass-assignment
+      # of the specified attribute.
+      def it_should_not_mass_assign(attribute)
+        it "should not allow mass-assignment of #{attribute}" do
+          lambda {
+            instance.update_attributes attribute => "whatever"
+          }.should_not change(instance, attribute)
+          instance.destroy unless instance.new_record?
         end
       end
     end

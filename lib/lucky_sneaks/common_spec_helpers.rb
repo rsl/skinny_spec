@@ -13,13 +13,29 @@ module LuckySneaks
     # 
     #   instance_for("foo") # => @foo
     def instance_for(name)
-      instance_variable_get("@#{name}")
+      instance_variable_get("@#{name.underscore}")
     end
     
     # Wraps a matcher that checks if the receiver contains an <tt>A</tt> element (link) 
     # whose <tt>href</tt> attribute is set to the specified path.
     def have_link_to(path)
       have_tag("a[href='#{path}']")
+    end
+    
+    # Returns dummy value for specified attribute based on the datatype expected for that
+    # attribute.
+    def dummy_value_for(instance, attribute)
+      actual = instance.send(attribute)
+      case instance.column_for_attribute(attribute).type
+      when :string, :text
+        actual == "foo" ? "bar" : "food"
+      when :integer, :float, :decimal
+        actual == 108 ? 815 : 108
+      when :boolean
+        actual ? false : true
+      when :date, :datetime, :time, :timestamp
+        actual == 1.week.ago ? 2.years.ago : 1.week.ago
+      end
     end
   end
 end
