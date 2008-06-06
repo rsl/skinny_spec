@@ -167,7 +167,7 @@ module LuckySneaks
       include LuckySneaks::CommonSpecHelpers
       
       # Creates an expectation which calls <tt>submit_to</tt> on the response
-      # from rendering the template. See that method for more details
+      # from rendering the template. See that method for more details.
       def it_should_submit_to(hint = nil, &route)
         if hint.nil? && route.respond_to?(:to_ruby)
           hint = route.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
@@ -175,6 +175,20 @@ module LuckySneaks
         it "should submit to #{(hint || route)}" do
           do_render
           response.should submit_to(instance_eval(&route))
+        end
+      end
+      
+      # Creates an expectation that the template uses Rails' <tt>form_for</tt> to generate
+      # the proper form action and method to create or update the specified object.
+      # 
+      # <b>Note:</b> This method takes a string or symbol representing the instance
+      # variable's name to create the expectation for <tt>form_for</tt>
+      # not an instance variable, which would be nil in the scope of the example block.
+      # If you use namespacing for your <tt>form_for</tt>, you'll have to manually write out
+      # a similar spec.
+      def it_should_have_form_for(name)
+        it "should have a form_for(@#{name})" do
+          template.should_receive(:form_for).with(instance_for(name))
         end
       end
 
