@@ -81,7 +81,22 @@ use <tt>stub_find_all</tt>, <tt>stub_find_one</tt>, and <tt>stub_initialize</tt>
 for this is because the former methods actually save us a step by defining an implicit 
 controller method request. If you add a new method to your resource routing, you'll want to
 use the helper method <tt>define_request</tt> in those example groups to define an explicit
-request.
+request. You can also define a method called <tt>shared_request</tt> to "share a
+<tt>define_request</tt>" across shared describe blocks, like so:
+
+  describe "POST :create" do
+    def shared_request
+      post :create
+    end
+    
+    describe "when successful" do
+      # ...
+    end
+    
+    describe "when unsuccessful" do
+      # ...
+    end
+  end
 
 Finally we get to the meat of the spec and of Skinny Specs itself: the actual expectations.
 The first thing you'll notice is the use of example group (read: "describe" block) level methods

@@ -32,7 +32,7 @@ module LuckySneaks
         try_implicit_request
       else
         error_message = "Could not determine request definition for 'describe' context. "
-        error_message << "Please set define_request or shared_request."
+        error_message << "Please use define_request or define a shared_request."
         raise ArgumentError, error_message
       end
     end
