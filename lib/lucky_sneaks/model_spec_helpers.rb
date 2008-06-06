@@ -250,7 +250,9 @@ module LuckySneaks
       # validation.
       def it_should_validate_confirmation_of(attribute, message = ActiveRecord::Errors.default_error_messages[:confirmation])
         it "should validate #{attribute} confirmation" do
-          instance.send "#{attribute}=", dummy_value_for(instance, attribute)
+          dummy_value = dummy_value_for(instance, attribute) || "try a string"
+          instance.send "#{attribute}=", dummy_value
+          instance.send "#{attribute}_confirmation=", dummy_value.succ
           instance.errors_on(attribute).should include(message)
         end
       end

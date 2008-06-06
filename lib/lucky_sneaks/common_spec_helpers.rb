@@ -25,16 +25,18 @@ module LuckySneaks
     # Returns dummy value for specified attribute based on the datatype expected for that
     # attribute.
     def dummy_value_for(instance, attribute)
-      actual = instance.send(attribute)
-      case instance.column_for_attribute(attribute).type
-      when :string, :text
-        actual == "foo" ? "bar" : "food"
-      when :integer, :float, :decimal
-        actual == 108 ? 815 : 108
-      when :boolean
-        actual ? false : true
-      when :date, :datetime, :time, :timestamp
-        actual == 1.week.ago ? 2.years.ago : 1.week.ago
+      if datatype = instance.column_for_attribute(attribute)
+        actual = instance.send(attribute)
+        case datatype.type
+        when :string, :text
+          actual == "foo" ? "bar" : "food"
+        when :integer, :float, :decimal
+          actual == 108 ? 815 : 108
+        when :boolean
+          actual ? false : true
+        when :date, :datetime, :time, :timestamp
+          actual == 1.week.ago ? 2.years.ago : 1.week.ago
+        end
       end
     end
   end
