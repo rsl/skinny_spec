@@ -14,7 +14,7 @@ describe <%= controller_class_name %>Controller do
       
     it_should_find :<%= plural_name %>
     it_should_assign :<%= plural_name %>
-    it_should_render :template, "index"
+    it_should_render_template "index"
   end
   
   describe "GET :new" do
@@ -24,7 +24,7 @@ describe <%= controller_class_name %>Controller do
     
     it_should_initialize :<%= singular_name %>
     it_should_assign :<%= singular_name %>
-    it_should_render :template, "form"
+    it_should_render_template "form"
   end
   
   describe "POST :create" do
@@ -45,7 +45,7 @@ describe <%= controller_class_name %>Controller do
       
       it_should_initialize :<%= singular_name %>
       it_should_assign :<%= singular_name %>
-      it_should_render :template, "form"
+      it_should_render_template "form"
     end
   end
   
@@ -56,7 +56,7 @@ describe <%= controller_class_name %>Controller do
     
     it_should_find :<%= singular_name %>
     it_should_assign :<%= singular_name %>
-    it_should_render :template, "show"
+    it_should_render_template "show"
   end
   
   describe "GET :edit" do
@@ -66,7 +66,7 @@ describe <%= controller_class_name %>Controller do
     
     it_should_find :<%= singular_name %>
     it_should_assign :<%= singular_name %>
-    it_should_render :template, "form"
+    it_should_render_template "form"
   end
   
   describe "PUT :update" do
@@ -87,7 +87,7 @@ describe <%= controller_class_name %>Controller do
       
       it_should_find :<%= singular_name %>
       it_should_assign :<%= singular_name %>
-      it_should_render :template, "form"
+      it_should_render_template "form"
     end
   end
   
