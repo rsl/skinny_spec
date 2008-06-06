@@ -160,9 +160,9 @@ module LuckySneaks
       end
       
       # Wraps the various <tt>it_should_render_<i>foo</i></tt> methods:
-      # <tt>it_should_render_template</tt>, <tt>it_should_render_xml</tt>,
-      # <tt>it_should_render_json</tt>, <tt>it_should_render_formatted</tt>,
-      # and <tt>it_should_render_nothing</tt>.
+      # <tt>it_should_render_template</tt>, <tt>it_should_render_partial</tt>,
+      # <tt>it_should_render_xml</tt>, <tt>it_should_render_json</tt>,
+      # <tt>it_should_render_formatted</tt>, and <tt>it_should_render_nothing</tt>.
       def it_should_render(render_method, *args)
         send "it_should_render_#{render_method}", *args
       end
@@ -179,6 +179,22 @@ module LuckySneaks
         it "should render '#{name}' template" do
           eval_request
           response.should render_template(name)
+        end
+        create_content_type_expectation(options[:content_type]) if options[:content_type]
+      end
+      
+      # Creates an expectation that the controller method renders the specified partial.
+      # Accepts the following options which create additional expectations.
+      # 
+      #   <tt>:content_type</tt>:: Creates an expectation that the Content-Type header for the response
+      #                            matches the one specified
+      #   <tt>:status</tt>::       Creates an expectation that the HTTP status for the response
+      #                            matches the one specified
+      def it_should_render_partial(name, options = {})
+        create_status_expectation options[:status] if options[:status]
+        it "should render '#{name}' partial" do
+          controller.expect_render(:partial => name)
+          eval_request
         end
         create_content_type_expectation(options[:content_type]) if options[:content_type]
       end
