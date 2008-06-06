@@ -249,7 +249,7 @@ module LuckySneaks
       # the specified attribute. Takes an optional custom message to match the one in the model's
       # validation.
       def it_should_validate_confirmation_of(attribute, message = ActiveRecord::Errors.default_error_messages[:confirmation])
-        it "should validate #{attribute} confirmation" do
+        it "should validate confirmation of #{attribute}" do
           dummy_value = dummy_value_for(instance, attribute) || "try a string"
           instance.send "#{attribute}=", dummy_value
           instance.send "#{attribute}_confirmation=", dummy_value.succ
@@ -277,7 +277,12 @@ module LuckySneaks
       # but there's nothing saying it couldn't be another validation.
       def it_should_accept_as_valid(attribute, *values)
         values.each do |value|
-          it "should accept #{value} as a valid #{attribute}" do
+          value_inspect = case value
+            when String : "'#{value}'"
+            when NilClass : "nil"
+            else value
+          end
+          it "should accept #{value_inspect} as a valid #{attribute}" do
             instance.send "#{attribute}=", value
             instance.errors_on(attribute).should be_blank
           end
@@ -287,14 +292,23 @@ module LuckySneaks
       # Creates an expectation that the current model being spec'd does not accept the specified
       # values as valid for the specified attribute. This is most likely used with
       # <tt>validates_format_of</tt> but there's nothing saying it couldn't be another validation.
-      # If you want to spec the error message for the invalid attribute, just write the spec manually
-      # or mebbe contact me (rsl@luckysneaks.com) and beg me to add this in. Right now it seems like
-      # YAGNI and would add unnecessary complexity to the plugin.
+      # Takes an optional argument <tt>:message => "some custom error messsage"</tt> for
+      # spec'ing the actual error message
       def it_should_not_accept_as_valid(attribute, *values)
+        options = values.extract_options!
         values.each do |value|
-          it "should accept #{value} as a valid #{attribute}" do
+          value_inspect = case value
+            when String : "'#{value}'"
+            when NilClass : "nil"
+            else value
+          end
+          it "should accept #{value_inspect} as a valid #{attribute}" do
             instance.send "#{attribute}=", value
-            instance.errors_on(attribute).should_not be_blank
+            if options[:message]
+              instance.errors_on(attribute).should include(options[:message])
+            else
+              instance.errors_on(attribute).should_not be_blank
+            end
           end
         end
       end
