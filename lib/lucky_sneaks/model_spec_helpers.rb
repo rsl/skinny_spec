@@ -272,6 +272,32 @@ module LuckySneaks
         end
       end
       
+      # Creates an expectation that the current model being spec'd accepts the specified values as
+      # valid for the specified attribute. This is most likely used with <tt>validates_format_of</tt>
+      # but there's nothing saying it couldn't be another validation.
+      def it_should_accept_as_valid(attribute, *values)
+        values.each do |value|
+          it "should accept #{value} as a valid #{attribute}" do
+            instance.send "#{attribute}=", value
+            instance.errors_on(attribute).should be_blank
+          end
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd does not accept the specified
+      # values as valid for the specified attribute. This is most likely used with
+      # <tt>validates_format_of</tt> but there's nothing saying it couldn't be another validation.
+      # If you want to spec the error message for the invalid attribute, just write the spec manually
+      # or mebbe contact me (rsl@luckysneaks.com) and beg me to add this in. Right now it seems like
+      # YAGNI and would add unnecessary complexity to the plugin.
+      def it_should_not_accept_as_valid(attribute, *values)
+        values.each do |value|
+          it "should accept #{value} as a valid #{attribute}" do
+            instance.send "#{attribute}=", value
+            instance.errors_on(attribute).should_not be_blank
+          end
+        end
+      end
       # Creates an expectation that the current model being spec'd doesn't allow mass-assignment
       # of the specified attribute.
       def it_should_not_mass_assign(attribute)
