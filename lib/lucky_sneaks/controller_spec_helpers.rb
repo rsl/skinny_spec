@@ -134,13 +134,18 @@ module LuckySneaks
         end
       end
 
-      # Creates an expectation that the specified collection (<tt>flash</tt> or session)
-      # contains the specified key and value
+      # Creates an expectation that the specified collection (<tt>flash</tt> or <tt>session</tt>)
+      # contains the specified key and value. To specify that the collection should be set
+      # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set(collection, key, value = nil, &block)
         it "should set #{collection}[:#{key}]" do
           eval_request
           if value
-            self.send(collection)[key].should == value
+            if value == :nil
+              self.send(collection)[key].should be_nil
+            else
+              self.send(collection)[key].should == value
+            end
           elsif block_given?
             self.send(collection)[key].should == block.call
           else
@@ -149,12 +154,14 @@ module LuckySneaks
         end
       end
       
-      # Wraps <tt>it_should_set :flash</tt>
+      # Wraps <tt>it_should_set :flash</tt>. To specify that the collection should be set
+      # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_flash(name, value = nil)
         it_should_set :flash, name, value
       end
 
-      # Wraps <tt>it_should_set :session</tt>
+      # Wraps <tt>it_should_set :session</tt>. To specify that the collection should be set
+      # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_session(name, value = nil)
         it_should_set :session, name, value
       end
