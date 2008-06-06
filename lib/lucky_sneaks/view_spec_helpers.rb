@@ -189,6 +189,7 @@ module LuckySneaks
       def it_should_have_form_for(name)
         it "should have a form_for(@#{name})" do
           template.should_receive(:form_for).with(instance_for(name))
+          do_render
         end
       end
 
@@ -339,16 +340,6 @@ module LuckySneaks
       alias it_should_have_link_to_delete_each it_should_link_to_delete_each
       alias it_should_have_button_to_delete_each it_should_link_to_delete_each
       alias it_should_have_button_or_link_to_delete_each it_should_link_to_delete_each
-      
-      def it_should_render(hint = nil, &block)
-        if hint.nil? && block.respond_to?(:to_ruby)
-          hint = block.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
-        end
-        it "should render #{hint || route}" do
-          template.expect_render &block
-          do_render
-        end
-      end
     end
   end
 end

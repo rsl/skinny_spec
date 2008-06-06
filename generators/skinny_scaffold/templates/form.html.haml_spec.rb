@@ -24,11 +24,8 @@ describe "<%= File.join(controller_class_path, controller_singular_name) %>/form
 <% end -%>
   end
   
-  it "should use form_for to generate the proper form action and options" do
-    template.should_receive(:form_for).with(@<%= singular_name %>)
-    do_render
-  end
-  
+
+  it_should_have_form_for :<%= singular_name %>
 <% if attributes.blank? -%>
   # Add specs for editing attributes here, please! Like this:
   # 
