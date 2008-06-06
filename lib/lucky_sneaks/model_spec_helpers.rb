@@ -1,5 +1,5 @@
 $:.unshift File.join(File.dirname(__FILE__), "..")
-require "skinny_rspec"
+require "skinny_spec"
 
 module LuckySneaks
   # These methods are designed to be used in your example [read: "it"] blocks

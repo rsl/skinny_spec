@@ -1,5 +1,5 @@
 $:.unshift File.join(File.dirname(__FILE__), "..")
-require "skinny_rspec"
+require "skinny_spec"
 
 module LuckySneaks
   module ControllerSpecHelpers # :nodoc:

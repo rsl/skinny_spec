@@ -1,3 +1,3 @@
 if RAILS_ENV == "test"
-  require "skinny_rspec"
+  require "skinny_spec"
 end
