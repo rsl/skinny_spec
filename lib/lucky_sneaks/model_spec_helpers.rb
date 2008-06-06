@@ -7,6 +7,9 @@ module LuckySneaks
   # in checking out the example block [read: "describe"] level versions in of these
   # methods which can DRY things up even more:
   # LuckySneaks::ModelSpecHelpers::ExampleGroupLevelMethods
+  # 
+  # <b>Note:</b> The validation matchers are only meant to be used for simple validation checking
+  # not as a one-size-fits-all solution.
   module ModelSpecHelpers
     include LuckySneaks::CommonSpecHelpers
     
@@ -222,13 +225,48 @@ module LuckySneaks
         end
       end
       
-      # Creates an expectation that the current model being spec'd has <tt>validates_presence_of</tt>
+      # Creates an expectation that the current model being spec'd <tt>validates_presence_of</tt>
       # the specified attribute. Takes an optional custom message to match the one in the model's
       # validation.
-      def it_should_validate_presence_of(attribute, message = "can't be blank")
+      def it_should_validate_presence_of(attribute, message = ActiveRecord::Errors.default_error_messages[:blank])
         it "should not be valid if #{attribute} is blank" do
-          instance.attributes = valid_attributes.except(attribute)
+          instance.send "#{attribute}=", nil
           instance.errors_on(attribute).should include(message)
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd <tt>validates_numericality_of</tt>
+      # the specified attribute. Takes an optional custom message to match the one in the model's
+      # validation.
+      def it_should_validate_numericality_of(attribute, message = ActiveRecord::Errors.default_error_messages[:not_a_number])
+        it "should validate #{attribute} is a numeric" do
+          instance.send "#{attribute}=", "NaN"
+          instance.errors_on(attribute).should include(message)
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd <tt>validates_confirmation_of</tt>
+      # the specified attribute. Takes an optional custom message to match the one in the model's
+      # validation.
+      def it_should_validate_confirmation_of(attribute, message = ActiveRecord::Errors.default_error_messages[:confirmation])
+        it "should validate #{attribute} confirmation" do
+          instance.send "#{attribute}=", dummy_value_for(attribute)
+          instance.errors_on(attribute).should include(message)
+        end
+      end
+      
+      # Creates an expectation that the current model being spec'd <tt>validates_uniqueness_of</tt>
+      # the specified attribute. Takes an optional custom message to match the one in the model's
+      # validation.
+      # 
+      # <b>Note:</b> This method will fail completely if <tt>valid_attributes</tt>
+      # does not provide all the attributes needed to create a valid record.
+      def it_should_validate_uniqueness_of(attribute, message = ActiveRecord::Errors.default_error_messages[:taken])
+        it "should validate #{attribute} confirmation" do
+          previous_instance = class_for(self.class.description_text).create!(valid_attributes)
+          instance.attributes = valid_attributes
+          instance.errors_on(attribute).should include(message)
+          previous_instance.destroy
         end
       end
       
@@ -237,9 +275,8 @@ module LuckySneaks
       def it_should_not_mass_assign(attribute)
         it "should not allow mass-assignment of #{attribute}" do
           lambda {
-            instance.update_attributes attribute => "whatever"
+            instance.send :attributes=, {attribute => dummy_value_for(attribute)}
           }.should_not change(instance, attribute)
-          instance.destroy unless instance.new_record?
         end
       end
     end
