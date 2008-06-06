@@ -205,6 +205,19 @@ module LuckySneaks
           response.should allow_editing(instance_for(name), method)
         end
       end
+      
+      # Creates an expectation that the rendered template contains a <tt>FORM</tt> element
+      # (<tt>INPUT</tt>, <tt>TEXTAREA</tt>, or <tt>SELECT</tt>) with the specified name.
+      def it_should_have_form_element_for(name)
+        it "should have a form element named '#{name}'" do
+          do_render
+          response.should have_tag(
+            "form input[name='#{name}'],
+            form textarea[name='#{name}'],
+            form select[name='#{name}']"
+          )
+        end
+      end
 
       # Creates an expectation which calls <tt>have_link_or_button_to</tt> on the response
       # from rendering the template. See that method for more details.
