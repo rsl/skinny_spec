@@ -293,7 +293,7 @@ module LuckySneaks
       # values as valid for the specified attribute. This is most likely used with
       # <tt>validates_format_of</tt> but there's nothing saying it couldn't be another validation.
       # Takes an optional argument <tt>:message => "some custom error messsage"</tt> for
-      # spec'ing the actual error message
+      # spec'ing the actual error message.
       def it_should_not_accept_as_valid(attribute, *values)
         options = values.extract_options!
         values.each do |value|
