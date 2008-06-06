@@ -250,7 +250,7 @@ module LuckySneaks
       # validation.
       def it_should_validate_confirmation_of(attribute, message = ActiveRecord::Errors.default_error_messages[:confirmation])
         it "should validate #{attribute} confirmation" do
-          instance.send "#{attribute}=", dummy_value_for(attribute)
+          instance.send "#{attribute}=", dummy_value_for(instance, attribute)
           instance.errors_on(attribute).should include(message)
         end
       end
@@ -275,7 +275,7 @@ module LuckySneaks
       def it_should_not_mass_assign(attribute)
         it "should not allow mass-assignment of #{attribute}" do
           lambda {
-            instance.send :attributes=, {attribute => dummy_value_for(attribute)}
+            instance.send :attributes=, {attribute => dummy_value_for(instance, attribute)}
           }.should_not change(instance, attribute)
         end
       end
