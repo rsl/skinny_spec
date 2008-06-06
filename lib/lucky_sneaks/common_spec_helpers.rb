@@ -13,7 +13,7 @@ module LuckySneaks
     # 
     #   instance_for("foo") # => @foo
     def instance_for(name)
-      instance_variable_get("@#{name.underscore}")
+      instance_variable_get("@#{name.to_s.underscore}")
     end
     
     # Wraps a matcher that checks if the receiver contains an <tt>A</tt> element (link) 
