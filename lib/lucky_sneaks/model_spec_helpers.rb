@@ -284,7 +284,7 @@ module LuckySneaks
           end
           it "should accept #{value_inspect} as a valid #{attribute}" do
             instance.send "#{attribute}=", value
-            instance.errors_on(attribute).should be_blank
+            instance.errors_on(attribute).should == []
           end
         end
       end
@@ -302,12 +302,12 @@ module LuckySneaks
             when NilClass : "nil"
             else value
           end
-          it "should accept #{value_inspect} as a valid #{attribute}" do
+          it "should not accept #{value_inspect} as a valid #{attribute}" do
             instance.send "#{attribute}=", value
             if options[:message]
               instance.errors_on(attribute).should include(options[:message])
             else
-              instance.errors_on(attribute).should_not be_blank
+              instance.should have_at_least(1).errors_on(attribute)
             end
           end
         end
