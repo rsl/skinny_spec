@@ -44,7 +44,7 @@ module LuckySneaks
     # These methods are designed to be used at the example group [read: "describe"] level
     # to simplify and DRY up common expectations.
     module ExampleGroupMethods
-      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#find</tt>.
+      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.find</tt>.
       # Examples:
       # 
       #   it_should_find :foos                                 # => Foo.should_receive(:find).with(:all)
@@ -81,28 +81,60 @@ module LuckySneaks
           eval_request
         end
       end
-
+      
+      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.new</tt>.
+      # Takes optional <tt>params</tt> for the initialization arguments. Example
+      # 
+      #   it_should_initialize :foo                  # => Foo.should_receive(:new)
+      #   it_should_initialize :foo, :params => :bar # => Foo.should_receive(:new).with(params[:bar])
+      #   it_should_initialize :foo, :bar => "baz"   # => Foo.should_receive(:new).with(:bar => "baz")
       def it_should_initialize(name, options = {})
         it "should initialize a #{name}" do
           create_ar_class_expectation name, :new, params[options.delete(:params)], options
           eval_request
         end
       end
-
+      
+      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#save</tt> on the
+      # named instance. Example:
+      #
+      #   it_should_save :foo # => @foo.should_receive(:save).and_return(true)
+      # 
+      # <b>Note:</b> This helper should not be used to spec a failed <tt>save</tt> call. Use <tt>it_should_assign</tt>
+      # instead, to verify that the instance is captured in an instance variable for the inevitable re-rendering
+      # of the form template.
       def it_should_save(name)
         it "should save the #{name}" do
           create_positive_ar_instance_expectation name, :save
           eval_request
         end
       end
-
+      
+      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#update_attributes</tt>
+      # on the named instance. Takes optional argument for <tt>params</tt> to specify in the
+      # expectation. Examples:
+      #
+      #   it_should_update :foo                  # => @foo.should_receive(:update_attributes).and_return(true)
+      #   it_should_update :foo, :params => :bar # => @foo.should_receive(:update_attributes).with(params[:bar]).and_return(true)
+      # 
+      # <b>Note:</b> This helper should not be used to spec a failed <tt>update_attributes</tt> call. Use
+      # <tt>it_should_assign</tt> instead, to verify that the instance is captured in an instance variable
+      # for the inevitable re-rendering of the form template.
       def it_should_update(name, options = {})
         it "should update the #{name}" do
           create_positive_ar_instance_expectation name, :update_attributes, params[options[:params]]
           eval_request
         end
       end
-
+      
+      # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#destroy</tt> on the named
+      # instance. Example:
+      # 
+      #   it_should_destroy :foo # => @foo.should_receive(:destroy).and_return(true)
+      # 
+      # <b>Note:</b> This helper should not be used to spec a failed <tt>destroy</tt> call. Use
+      # <tt>it_should_assign</tt> instead, if you need to verify that the instance is captured in an instance
+      # variable if it is re-rendered somehow. This is probably a really edge use case.
       def it_should_destroy(name, options = {})
         it "should delete the #{name}" do
           create_positive_ar_instance_expectation name, :destroy
@@ -131,6 +163,69 @@ module LuckySneaks
               it_should_assign_instance_variable key, value
             end
           end
+        end
+      end
+      
+      # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_assign</tt>
+      # for simple cases. If you need more control over the parameters of the find, this
+      # isn't the right helper method and you should write out the two expectations separately.
+      def it_should_find_and_assign(*names)
+        names.each do |name|
+          it_should_find name
+          it_should_assign name
+        end
+      end
+      
+      # Wraps the separate expectations <tt>it_should_initialize</tt> and <tt>it_should_assign</tt>
+      # for simple cases. If you need more control over the parameters of the initialization, this
+      # isn't the right helper method and you should write out the two expectations separately.
+      # 
+      # <b>Note:</b> This method is used for controller methods like <tt>new</tt>, where the instance
+      # is initialized without being saved (this includes failed <tt>create</tt> requests).
+      # If you want to spec that the controller method successfully saves the instance,
+      # please use <tt>it_should_initialize_and_save</tt>.
+      def it_should_initialize_and_assign(*names)
+        names.each do |name|
+          it_should_initialize name
+          it_should_assign name
+        end
+      end
+      
+      # Wraps the separate expectations <tt>it_should_initialize</tt> and <tt>it_should_save</tt>
+      # for simple cases. If you need more control over the parameters of the initialization, this
+      # isn't the right helper method and you should write out the two expectations separately.
+      # 
+      # <b>Note:</b> This method is used for controller methods like <tt>create</tt>, where the instance
+      # is initialized and successfully saved. If you want to spec that the instance is created
+      # but not saved, just use <tt>it_should_initialize_and_assign</tt>.
+      def it_should_initialize_and_save(*names)
+        names.each do |name|
+          it_should_initialize name
+          it_should_save name
+        end
+      end
+      
+      # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_update</tt>
+      # for simple cases. If you need more control over the parameters of the find, this
+      # isn't the right helper method and you should write out the two expectations separately.
+      # 
+      # <b>Note:</b> This method is used for controller methods like <tt>update</tt>, where the
+      # instance is loaded from the database and successfully saved. If you want to spec that the
+      # instance is found but not saved, just use <tt>it_should_find_and_assign</tt>.
+      def it_should_find_and_update(*names)
+        names.each do |name|
+          it_should_find name
+          it_should_update name
+        end
+      end
+      
+      # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_destroy</tt>
+      # for simple cases. If you need more control over the parameters of the find, this
+      # isn't the right helper method and you should write out the two expectations separately.
+      def it_should_find_and_destroy(*names)
+        names.each do |name|
+          it_should_find name
+          it_should_destroy name
         end
       end
 
