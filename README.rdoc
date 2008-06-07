@@ -7,7 +7,9 @@ some of the bloat that sometimes results from properly specing your classes and 
 
 Obviously you'll need to be using RSpec[http://github.com/dchelimsky/rspec/tree/master] and
 Rspec-Rails[http://github.com/dchelimsky/rspec-rails/tree/master] as your testing framework.
-To benefit from Skinny Spec's scaffolding, you'll need to be using make_resourceful and Haml
+To benefit from Skinny Spec's scaffolding, you'll need to be using
+make_resourceful[http://github.com/rsl/make_resourceful/tree/master] and
+Haml[http://github.com/nex3/haml/tree/master]
 as well. I've got plans to add more generic Rails' scaffolding but I have <i>lots</i> of plans so
 don't hold your breath.
 
@@ -47,8 +49,7 @@ Let's look at the controller specs.
         @users = stub_index(User)
       end
 
-      it_should_find :users
-      it_should_assign :users
+      it_should_find_and_assign :users
       it_should_render :template, "index"
     end
     
@@ -60,8 +61,7 @@ Let's look at the controller specs.
           @user = stub_create(User)
         end
 
-        it_should_initialize :user
-        it_should_save :user
+        it_should_initialize_and_save :user
         it_should_redirect_to { user_url(@user) }
       end
     
@@ -100,19 +100,26 @@ request. You can also define a method called <tt>shared_request</tt> to "share a
 
 Finally we get to the meat of the spec and of Skinny Specs itself: the actual expectations.
 The first thing you'll notice is the use of example group (read: "describe" block) level methods
-instead of the usual example (read: "it") blocks. Note that none of these methods use the
+instead of the usual example (read: "it") blocks. Using this helper at the example group level
+saves us three lines over using an example block. (If this isn't significant to you, this is
+probably the wrong plugin for you as well. Sorry.) Note that none of these methods use the
 instance variables defined in the "before" block because they are all nil at the example block
 level. Let's look at a sample method to see how it works:
 
-  it_should_find :users
+  it_should_find_and_assign :users
 
-This wraps an expectation that <tt>User.should_receive(:find).with(:all)</tt>. Using this helper
-at the example group level saves us three lines over using an example block. (If this isn't
-significant to you, this is probably the wrong plugin for you as well. Sorry.) You can add
-more detailed arguments to that find. Check the documentation for <tt>it_should_find</tt> for
-more information. You might have guessed that <tt>it_should_assign</tt> and
-<tt>it_should_render_template</tt> work in a similar fashion and you'd be right. Again,
-see the documentation for these individual methods for more information.
+This actually wraps two different expectations: one that <tt>User.should_receive(:find).with(:all)</tt>
+and another that the instance variable <tt>@users</tt> is assigned with the return value from that finder call.
+If you need to add more detailed arguments to the find, you can easily break this into two different
+expectations like:
+
+  it_should_find :users, :limit => 2
+  it_should_assign :users
+
+See the documentation for the <tt>it_should_find</tt> for more information. You might have guessed that
+<tt>it_should_initialize_assign</tt> and <tt>it_should_render_template</tt> work in a similar 
+fashion and you'd be right. Again, see the documentation for these individual methods for more
+information. Lots of information in those docs.
 
 Before we're through with the controller specs, let me point out one more important detail. In
 order to use <tt>it_should_redirect_to</tt> we have to send the routing inside a block argument
@@ -132,11 +139,8 @@ Now let's move to the view specs!
         :adult => false
       })
     end
-
-    it "should use form_for to generate the proper form action and options" do
-      template.should_receive(:form_for).with(@user)
-      do_render
-    end
+    
+    it_should_have_form_for :user
 
     it_should_allow_editing :user, :name
     it_should_allow_editing :user, :birthday
@@ -150,7 +154,26 @@ Like the special <tt>stub_index</tt> methods in the controller
 specs, the view specs have a shorthand mock and stub helpers: <tt>mock_and_assign</tt> and
 <tt>mock_and_assign_collection</tt>. These are well documented so please check them out.
 
-There are also some really nice helper methods that I'd like point out. One is <tt>it_should_link_to_<i>controller_method</i></tt>. These methods (there's one each for
+There are also some really nice helper methods that I'd like point out. First is
+<tt>it_should_have_form_for</tt>. This is a really good convenience wrapper that basically wraps
+the much longer:
+
+  it "should use form_for to generate the proper form action and options" do
+    template.should_receive(:form_for).with(@user)
+    do_render
+  end
+  
+Next up is the <tt>it_should_allow_editing</tt> helper. I love this method the most because it
+really helps DRY up that view spec while at the same time being amazingly unbrittle. Instead of
+creating an expectation for a specific form element, this method creates a generalized expectation
+that there's a form element with the <tt>name</tt> attribute set in such away that it will
+generate the proper <tt>params</tt> to use in the controller to edit or create the instance.
+Check out the docs and the source for more information on this. Also check out
+<tt>it_should_have_form_element_for</tt> which is roughly equivalent for those times when you use
+<tt>form_tag</tt> instead.
+
+Finally let's look at those <tt>it_should_link_to_<i>controller_method</i></tt> helpers.
+These methods (and there's one each for the controller methods
 <tt>new</tt>, <tt>edit</tt>, <tt>show</tt>, and <tt>delete</tt>) point to instance variables
 which you should be created in the "before" blocks with <tt>mock_and_assign</tt>. The other is
 <tt>it_should_allow_editing</tt> which is likewise covered extensively in the documentation and
@@ -165,8 +188,8 @@ it is customarily stated.
 
 === Model Specs
 
-There's not a lot that Skinny Spec does here besides add a matcher for the various ActiveRecord
-associations. On the example group level you call them like:
+Skinny Spec adds a matcher for the various ActiveRecord associations. On the example group level
+you call them like:
 
   it_should_belong_to :manager
   it_should_have_many :clients
@@ -177,7 +200,9 @@ Within an example you can call them on either the class or the instance setup in
   @user.should belong_to(:group)
   User.should belong_to(:group)
   
-Please consult the documentation for more information.
+I've also added some very basic validation helpers like <tt>it_should_validate_presence_of</tt>,
+<tt>it_should_validate_uniqueness_of</tt>, <tt>it_should_not_mass_assign</tt>. Please consult
+the documentation for more information.
 
 == Miscellaneous Notes
 
@@ -200,3 +225,5 @@ In the scaffolding, I have used my own idiomatic Rails usage:
 
 Sections of this code were taken from or inspired by Rick Olsen's
 rspec_on_rails_on_crack[http://github.com/technoweenie/rspec_on_rails_on_crack/tree/master].
+Also thanks and props to Hampton Catlin and Nathan Weizenbaum for the lovely and imminently useable
+Haml and make_resourceful. Also also praises and glory to David Chelimsky and the Rspec crew.
