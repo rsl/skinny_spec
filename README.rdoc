@@ -121,9 +121,18 @@ See the documentation for the <tt>it_should_find</tt> for more information. You 
 fashion and you'd be right. Again, see the documentation for these individual methods for more
 information. Lots of information in those docs.
 
-A useful helper method that doesn't appear in any of the scaffolding is <tt>with_default_restful_methods</tt>
-which takes a block and evaluates it for each of the RESTful controller methods. Very useful for
-spec'ing that these methods redirect to the login page when the user isn't logged in, for example.
+A useful helper method that doesn't appear in any of the scaffolding is <tt>with_default_restful_actions</tt>
+which takes a block and evaluates it for each of the RESTful controller actions. Very useful for
+spec'ing that these methods redirect to the login page when the user isn't logged in, for example. This
+method is designed to be used inside an example like so:
+
+  describe "when not logged in" do
+    it "should redirect all requests to the login page" do
+      with_default_restful_actions do
+        response.should redirect_to(login_url)
+      end
+    end
+  end
 
 Before we're through with the controller specs, let me point out one more important detail. In
 order to use <tt>it_should_redirect_to</tt> we have to send the routing inside a block argument

@@ -12,6 +12,32 @@ module LuckySneaks
       base.extend ControllerRequestHelpers::ExampleGroupMethods
     end
     
+    # Evaluates the specified block for each of the RESTful controller methods.
+    # This is useful to spec that all controller methods redirect when no user is
+    # logged in.
+    def with_default_restful_actions(params = {}, &block)
+      {
+        :get => :index,
+        :get => :new,
+        :post => :create
+      }.each do |method_id, message|
+        self.send method_id, message, params
+        block.call
+      end
+      {
+        :get => :edit,
+        :put => :update,
+        :delete => :destroy
+      }.each do |method_id, message|
+        if params[:before]
+          params.delete(:before).call
+        end
+        # Presuming any id will do
+        self.send method_id, message, params.merge(:id => 1)
+        block.call
+      end
+    end
+    
   private
     def create_ar_class_expectation(name, method, argument = nil, options = {})
       args = []
@@ -376,32 +402,6 @@ module LuckySneaks
         it "should redirect to #{(hint || route)}" do
           eval_request
           response.should redirect_to(instance_eval(&route))
-        end
-      end
-      
-      # Evaluates the specified block for each of the RESTful controller methods.
-      # This is useful to spec that all controller methods redirect when no user is
-      # logged in.
-      def with_default_restful_actions(params = {}, &block)
-        {
-          :get => :index,
-          :get => :new,
-          :post => :create
-        }.each do |method_id, message|
-          self.send method_id, message, params
-          block.call
-        end
-        {
-          :get => :edit,
-          :put => :update,
-          :delete => :destroy
-        }.each do |method_id, message|
-          if params[:before]
-            params.delete(:before).call
-          end
-          # Presuming any id will do
-          self.send method_id, message, params.merge(:id => 1)
-          block.call
         end
       end
       
