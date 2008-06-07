@@ -49,6 +49,7 @@ describe <%= controller_class_name %>Controller do
       end
       
       it_should_initialize_and_save :<%= singular_name %>
+      it_should_set_flash :notice
       it_should_redirect_to { <%= singular_name %>_url(@<%= singular_name %>) }
     end
     
@@ -58,6 +59,7 @@ describe <%= controller_class_name %>Controller do
       end
       
       it_should_initialize_and_assign :<%= singular_name %>
+      it_should_set_flash :error
       it_should_render_template "form"
     end
   end
@@ -87,6 +89,7 @@ describe <%= controller_class_name %>Controller do
       end
       
       it_should_find_and_update :<%= singular_name %>
+      it_should_set_flash :notice
       it_should_redirect_to { <%= singular_name %>_url(@<%= singular_name %>) }
     end
     
@@ -96,6 +99,7 @@ describe <%= controller_class_name %>Controller do
       end
       
       it_should_find_and_assign :<%= singular_name %>
+      it_should_set_flash :error
       it_should_render_template "form"
     end
   end
@@ -106,6 +110,7 @@ describe <%= controller_class_name %>Controller do
     end
     
     it_should_find_and_destroy :<%= singular_name %>
+    it_should_set_flash :notice
     it_should_redirect_to { <%= plural_name %>_url }
   end
 end
