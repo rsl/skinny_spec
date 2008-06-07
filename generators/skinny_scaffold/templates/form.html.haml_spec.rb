@@ -17,14 +17,13 @@ describe "<%= File.join(controller_class_path, controller_singular_name) %>/form
       <%- when :date, :datetime, :time, :timestamp -%>
       :<%= attribute.name %> => 1.week.ago<%= index < attributes.size - 1 ? "," : "" %>
       <%- else -%>
-      :<%= attribute.name %> => nil<%= index < attributes.size - 1 ? "," : "" %>
+      :<%= attribute.name %> => nil<%= index < attributes.size - 1 ? "," : "" %> # Could not determine valid attribute
     <%- end -%>
   <%- end -%>
     })
 <% end -%>
   end
   
-
   it_should_have_form_for :<%= singular_name %>
 <% if attributes.blank? -%>
   # Add specs for editing attributes here, please! Like this:
