@@ -121,6 +121,10 @@ See the documentation for the <tt>it_should_find</tt> for more information. You 
 fashion and you'd be right. Again, see the documentation for these individual methods for more
 information. Lots of information in those docs.
 
+A useful helper method that doesn't appear in any of the scaffolding is <tt>with_default_restful_methods</tt>
+which takes a block and evaluates it for each of the RESTful controller methods. Very useful for
+spec'ing that these methods redirect to the login page when the user isn't logged in, for example.
+
 Before we're through with the controller specs, let me point out one more important detail. In
 order to use <tt>it_should_redirect_to</tt> we have to send the routing inside a block argument
 there so it can be evaluated in the example context instead of the example group, where it
