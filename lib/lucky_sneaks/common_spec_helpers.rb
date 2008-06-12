@@ -6,7 +6,10 @@ module LuckySneaks
     # 
     #   class_for("foo") # => Foo
     def class_for(name)
+      name.to_s.constantize
+    rescue NameError
       name.to_s.classify.constantize
+      # Let any other error rise!
     end
 
     # Returns instance variable for the specified name. Example:
