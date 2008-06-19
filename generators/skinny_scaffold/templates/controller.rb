@@ -1,5 +1,5 @@
 class <%= controller_class_name %>Controller < ApplicationController
-  <%- if !defined?(Resourceful::Maker) -%>
+  <%- if defined?(Resourceful::Maker) -%>
   make_resourceful do
     actions :all
     

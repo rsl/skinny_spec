@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '<%= '/..' * controller_class_nesting_depth %>/../../spec_helper'
 
-describe "<%= File.join(controller_class_path, controller_singular_name) %>/_<%= singular_name %>.html.haml" do
+describe "<%= File.join(controller_class_path, controller_singular_name) %>/_<%= singular_name %>.html.<%= template_language %>" do
   before(:each) do
 <% if attributes.blank? -%>
     @<%= singular_name %> = mock_and_assign(<%= model_name %>)

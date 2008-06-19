@@ -1,8 +1,9 @@
 %h1 <%= model_name %> List
 %table
   - if @<%= plural_name %>.empty?
-    %tr.empty
-      %td== There are no <%= plural_name.humanize.downcase %>
+    %tbody
+      %tr.empty
+        %td== There are no <%= plural_name.humanize.downcase %>
   - else
     %thead
       %tr
@@ -19,4 +20,4 @@
     %tbody
       = render :partial => @<%= plural_name %>
 #commands
-  = button_to "New <%= singular_name.titleize %>", new_<%= singular_name %>_path, :method => :get
+  = button_to "New <%= singular_name.titleize %>", new_<%= singular_name %>_path, :method => "get"

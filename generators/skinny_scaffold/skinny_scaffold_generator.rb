@@ -1,10 +1,10 @@
 class SkinnyScaffoldGenerator < Rails::Generator::NamedBase
-  attr_reader   :controller_class_path, :controller_file_path, :controller_class_nesting,
-                :controller_class_nesting_depth, :controller_class_name, :controller_underscore_name,
-                :controller_plural_name
-  alias_method  :controller_file_name,  :controller_underscore_name
-  alias_method  :controller_singular_name, :controller_file_name
-  alias_method  :controller_table_name, :controller_plural_name
+  attr_reader  :controller_class_path, :controller_file_path, :controller_class_nesting,
+               :controller_class_nesting_depth, :controller_class_name, :controller_underscore_name,
+               :controller_plural_name, :template_language
+  alias_method :controller_file_name,  :controller_underscore_name
+  alias_method :controller_singular_name, :controller_file_name
+  alias_method :controller_table_name, :controller_plural_name
   
   def initialize(runtime_args, runtime_options = {})
     super
@@ -36,16 +36,17 @@ class SkinnyScaffoldGenerator < Rails::Generator::NamedBase
       m.directory File.join('spec', 'models', class_path)
       
       # Views
+      @template_language = defined?(Haml) ? "haml" : "erb"
       %w{index show form}.each do |action|
-        m.template "#{action}.html.haml", 
-          File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.haml")
-        m.template "#{action}.html.haml_spec.rb",
-          File.join('spec/views', controller_class_path, controller_file_name, "#{action}.html.haml_spec.rb")
+        m.template "#{action}.html.#{template_language}", 
+          File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.#{template_language}")
+        m.template "#{action}.html_spec.rb",
+          File.join('spec/views', controller_class_path, controller_file_name, "#{action}.html.#{template_language}_spec.rb")
       end
-      m.template 'index_partial.html.haml',
-        File.join('app/views', controller_class_path, controller_file_name, "_#{file_name}.html.haml")
-      m.template 'index_partial.html.haml_spec.rb',
-        File.join('spec/views', controller_class_path, controller_file_name, "_#{file_name}.html.haml_spec.rb")
+      m.template "index_partial.html.#{template_language}",
+        File.join('app/views', controller_class_path, controller_file_name, "_#{file_name}.html.#{template_language}")
+      m.template 'index_partial.html_spec.rb',
+        File.join('spec/views', controller_class_path, controller_file_name, "_#{file_name}.html.#{template_language}_spec.rb")
        
       # Helper
       m.template 'helper.rb',

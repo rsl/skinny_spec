@@ -7,11 +7,12 @@ some of the bloat that sometimes results from properly specing your classes and 
 
 Obviously you'll need to be using RSpec[http://github.com/dchelimsky/rspec/tree/master] and
 Rspec-Rails[http://github.com/dchelimsky/rspec-rails/tree/master] as your testing framework.
-To benefit from Skinny Spec's scaffolding, you'll need to be using
-make_resourceful[http://github.com/rsl/make_resourceful/tree/master] and
-Haml[http://github.com/nex3/haml/tree/master]
-as well. I've got plans to add more generic Rails' scaffolding but I have <i>lots</i> of plans so
-don't hold your breath.
+
+Skinny Spec was originally designed [and best enjoyed] if you're using
+Haml[http://github.com/nex3/haml/tree/master] and
+make_resourceful[http://github.com/rsl/make_resourceful/tree/master] but will default to
+ERb and a facsimile of Rails' default scaffolding [for the views and controllers, respectively]
+if Haml and/or make_resourceful are not available. I recommend using them though. :)
 
 In addition, Skinny Spec uses Ruby2Ruby to make nicer expectation messages and you'll want to
 have that installed as well. It's not a dependency or anything but it <i>is</i> highly
