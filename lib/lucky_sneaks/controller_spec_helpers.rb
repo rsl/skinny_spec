@@ -260,6 +260,8 @@ module LuckySneaks
       # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set(collection, key, value = nil, &block)
         it "should set #{collection}[:#{key}]" do
+          # Allow flash.now[:foo] to remain in the flash
+          flash.stub!(:sweep) if collection == :flash
           eval_request
           if value
             if value == :nil
