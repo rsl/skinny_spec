@@ -64,7 +64,7 @@ module LuckySneaks # :nodoc:
     # It also accepts some options used to stub out <tt>save</tt> with a specified <tt>true</tt>
     # or <tt>false</tt> but you should be using <tt>stub_create</tt> in that case.
     def stub_initialize(klass, options = {})
-      returning mock_model(klass, :new_record? => true, :id => nil) do |member|
+      returning mock_model(klass) do |member|
         stub_out member, options.delete(:stub)
         if format = options[:format]
           stub_formatted member, format
@@ -74,6 +74,9 @@ module LuckySneaks # :nodoc:
         if options[:stub_save]
           stub_ar_method member, :save, options[:return]
           klass.stub!(:new).with(params[options[:params]]).and_return(member)
+        else
+          member.stub!(:new_record?).and_return(true)
+          member.stub!(:id).and_return(nil)
         end
       end
     end
