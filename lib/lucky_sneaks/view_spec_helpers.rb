@@ -168,6 +168,9 @@ module LuckySneaks
       
       # Creates an expectation which calls <tt>submit_to</tt> on the response
       # from rendering the template. See that method for more details.
+      # 
+      # <b>Note:</b> This method takes a Proc to evaluate the route not simply a named route
+      # helper, which would be undefined in the scope of the example block.
       def it_should_submit_to(hint = nil, &route)
         if hint.nil? && route.respond_to?(:to_ruby)
           hint = route.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
@@ -192,6 +195,15 @@ module LuckySneaks
           do_render
         end
       end
+      
+      # Negative version of <tt>it_should_have_form_for</tt>. See that method for more
+      # details.
+      def it_should_not_have_form_for(name)
+        it "should not have a form_for(@#{name})" do
+          template.should_not_receive(:form_for).with(instance_for(name))
+          do_render
+        end
+      end
 
       # Creates an expectation which calls <tt>allow_editing</tt> on the response
       # from rendering the template. See that method for more details.
@@ -206,12 +218,34 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_allow_editing</tt>. See that method for more
+      # details.
+      def it_should_not_allow_editing(name, method)
+        it "should not allow editing of @#{name}##{method}" do
+          do_render
+          response.should_not allow_editing(instance_for(name), method)
+        end
+      end
+      
       # Creates an expectation that the rendered template contains a <tt>FORM</tt> element
       # (<tt>INPUT</tt>, <tt>TEXTAREA</tt>, or <tt>SELECT</tt>) with the specified name.
       def it_should_have_form_element_for(name)
         it "should have a form element named '#{name}'" do
           do_render
           response.should have_tag(
+            "form input[name='#{name}'],
+            form textarea[name='#{name}'],
+            form select[name='#{name}']"
+          )
+        end
+      end
+      
+      # Negative version of <tt>it_should_have_form_element_for</tt>. See that method
+      # for more details.
+      def it_should_not_have_form_element_for(name)
+        it "should not have a form element named '#{name}'" do
+          do_render
+          response.should_not have_tag(
             "form input[name='#{name}'],
             form textarea[name='#{name}'],
             form select[name='#{name}']"
@@ -237,6 +271,21 @@ module LuckySneaks
       alias it_should_have_button_to it_should_link_to
       alias it_should_have_button_or_link_to it_should_link_to
       
+      # Negative version of <tt>it_should_link_to</tt>. See that method
+      # for more details.
+      def it_should_not_link_to(hint = nil, &route)
+        if hint.nil? && route.respond_to?(:to_ruby)
+          hint = route.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
+        end
+        it "should have a link/button to #{(hint || route)}" do
+          do_render
+          response.should_not have_link_or_button_to(instance_eval(&route))
+        end
+      end
+      alias it_should_not_have_link_to it_should_not_link_to
+      alias it_should_not_have_button_to it_should_not_link_to
+      alias it_should_not_have_button_or_link_to it_should_not_link_to
+      
       # Creates an expectation which calls <tt>have_link_or_button_to_new</tt> on the response
       # from rendering the template. See that method for more details.
       # 
@@ -248,6 +297,21 @@ module LuckySneaks
           response.should have_link_or_button_to_new(name)
         end
       end
+      alias it_should_have_link_to_new it_should_link_to_new
+      alias it_should_have_button_to_new it_should_link_to_new
+      alias it_should_have_button_or_link_to_new it_should_link_to_new
+      
+      # Negative version of <tt>it_should_link_to_show</tt>. See that method
+      # for more details.
+      def it_should_not_link_to_new(name)
+        it "should have a link/button to create a new #{name}" do
+          do_render
+          response.should_not have_link_or_button_to_new(name)
+        end
+      end
+      alias it_should_not_have_link_to_new it_should_not_link_to_new
+      alias it_should_not_have_button_to_new it_should_not_link_to_new
+      alias it_should_not_have_button_or_link_to_new it_should_not_link_to_new
       
       # Creates an expectation which calls <tt>have_link_or_button_to_show</tt> on the response
       # from rendering the template. See that method for more details.
@@ -264,6 +328,18 @@ module LuckySneaks
       alias it_should_have_link_to_show it_should_link_to_show
       alias it_should_have_button_to_show it_should_link_to_show
       alias it_should_have_button_or_link_to_show it_should_link_to_show
+      
+      # Negative version of <tt>it_should_link_to_show</tt>. See that method
+      # for more details.
+      def it_should_not_link_to_show(name)
+        it "should have a link/button to show @#{name}" do
+          do_render
+          response.should_not have_link_or_button_to_show(instance_for(name))
+        end
+      end
+      alias it_should_not_have_link_to_show it_should_not_link_to_show
+      alias it_should_not_have_button_to_show it_should_not_link_to_show
+      alias it_should_not_have_button_or_link_to_show it_should_not_link_to_show
       
       # Creates an expectation which calls <tt>have_link_or_button_to_show</tt>
       # for each member of the instance variable matching the specified name
@@ -299,6 +375,19 @@ module LuckySneaks
       alias it_should_have_link_to_edit it_should_link_to_edit
       alias it_should_have_button_to_edit it_should_link_to_edit
       alias it_should_have_button_or_link_to_edit it_should_link_to_edit
+      
+      # Negative version of <tt>it_should_link_to_edit</tt>. See that method
+      # for more details.
+      def it_should_not_link_to_edit(name)
+        it "should have a link/button to edit @#{name}" do
+          do_render
+          response.should_not have_link_or_button_to_edit(instance_for(name))
+        end
+      end
+      alias it_should_not_have_link_to_edit it_should_not_link_to_edit
+      alias it_should_not_have_button_to_edit it_should_not_link_to_edit
+      alias it_should_not_have_button_or_link_to_edit it_should_not_link_to_edit
+
 
       # Creates an expectation which calls <tt>have_link_or_button_to_edit</tt>
       # for each member of the instance variable matching the specified name
@@ -334,6 +423,18 @@ module LuckySneaks
       alias it_should_have_link_to_delete it_should_link_to_delete
       alias it_should_have_button_to_delete it_should_link_to_delete
       alias it_should_have_button_or_link_to_delete it_should_link_to_delete
+      
+      # Negative version of <tt>it_should_link_to_delete</tt>. See that method
+      # for more details.
+      def it_should_not_link_to_delete(name)
+        it "should not have a link/button to delete @#{name}" do
+          do_render
+          response.should_not have_button_to_delete(instance_for(name))
+        end
+      end
+      alias it_should_not_have_link_to_delete it_should_not_link_to_delete
+      alias it_should_not_have_button_to_delete it_should_not_link_to_delete
+      alias it_should_not_have_button_or_link_to_delete it_should_not_link_to_delete
 
       # Creates an expectation which calls <tt>have_link_or_button_to_delete</tt>
       # for each member of the instance variable matching the specified name
