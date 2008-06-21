@@ -44,6 +44,7 @@ module LuckySneaks
       else
         have_tag(
           "input[type='text'][name='#{instance_name}[#{attribute}]'],
+          input[type='password'][name='#{instance_name}[#{attribute}]'],
           select[name='#{instance_name}[#{attribute}]'],
           textarea[name='#{instance_name}[#{attribute}]'],
           input[type='checkbox'][name='#{instance_name}[#{attribute}]'],
