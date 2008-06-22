@@ -97,7 +97,7 @@ module LuckySneaks # :nodoc:
       define_implicit_request :create
       if options[:params].nil?
         if self.respond_to?(:valid_attributes)
-          params[klass.name.downcase.to_sym] = valid_attributes
+          params[klass.name.underscore.to_sym] = valid_attributes
           options[:params] = valid_attributes
         else
           error_message = "Params for creating #{klass} could not be determined. "
