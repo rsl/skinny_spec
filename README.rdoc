@@ -98,6 +98,28 @@ request. You can also define a method called <tt>shared_request</tt> to "share a
       # ...
     end
   end
+  
+Note: When you're adding longer, more complicated controller specs you can still leverage
+implicit and shared requests by calling <tt>do_request</tt> in your spec as in the following
+example:
+
+  # Let's assume this controller is _not_ CategoriesController
+  # and that loading the categories isn't part of the default actions
+  describe "GET :index" do
+    before(:each) do
+      @categories = stub_find_all(Category)
+    end
+    
+    it "should preload categories" do
+      Category.should_receive(:find).with(:all)
+      do_request
+    end
+    
+    it "should assign @categories" do
+      do_request
+      assigns[:categories].should == @categories
+    end
+  end
 
 Finally we get to the meat of the spec and of Skinny Specs itself: the actual expectations.
 The first thing you'll notice is the use of example group (read: "describe" block) level methods
@@ -241,3 +263,5 @@ Sections of this code were taken from or inspired by Rick Olsen's
 rspec_on_rails_on_crack[http://github.com/technoweenie/rspec_on_rails_on_crack/tree/master].
 Also thanks and props to Hampton Catlin and Nathan Weizenbaum for the lovely and imminently useable
 Haml and make_resourceful. Also also praises and glory to David Chelimsky and the Rspec crew.
+
+Also thanks to Don Petersen for his suggestions and fixes.

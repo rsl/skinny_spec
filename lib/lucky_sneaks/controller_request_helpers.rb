@@ -24,6 +24,7 @@ module LuckySneaks
     rescue ArgumentError # missing block
       try_shared_request_definition
     end
+    alias do_request eval_request
 
     def try_shared_request_definition
       shared_request
