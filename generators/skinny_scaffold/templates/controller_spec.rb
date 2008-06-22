@@ -9,15 +9,15 @@ describe <%= controller_class_name %>Controller do
   <%- attributes.each_with_index do |attribute, index| -%>
     <%- case attribute.type -%>
       <%- when :string, :text -%>
-      :<%= attribute.name %> => "foo"<%= index < attributes.size - 1 ? "," : "" %>
+      "<%= attribute.name %>" => "foo"<%= index < attributes.size - 1 ? "," : "" %>
       <%- when :integer, :float, :decimal -%>
-      :<%= attribute.name %> => 815<%= index < attributes.size - 1 ? "," : "" %>
+      "<%= attribute.name %>" => 815<%= index < attributes.size - 1 ? "," : "" %>
       <%- when :boolean -%>
-      :<%= attribute.name %> => false<%= index < attributes.size - 1 ? "," : "" %>
+      "<%= attribute.name %>" => false<%= index < attributes.size - 1 ? "," : "" %>
       <%- when :date, :datetime, :time, :timestamp -%>
-      :<%= attribute.name %> => 1.week.ago<%= index < attributes.size - 1 ? "," : "" %>
+      "<%= attribute.name %>" => 1.week.ago<%= index < attributes.size - 1 ? "," : "" %>
       <%- else -%>
-      :<%= attribute.name %> => nil<%= index < attributes.size - 1 ? "," : "" %> # Could not determine valid attribute
+      "<%= attribute.name %>" => nil<%= index < attributes.size - 1 ? "," : "" %> # Could not determine valid attribute
     <%- end -%>
   <%- end -%>
 <% end -%>
