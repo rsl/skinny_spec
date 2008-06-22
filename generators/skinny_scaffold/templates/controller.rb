@@ -4,7 +4,12 @@ class <%= controller_class_name %>Controller < ApplicationController
     actions :all
     
     # Let's get the most use from form_for and share a single form here!
-    response_for :new, :create_fails, :edit, :update_fails do
+    response_for :new, :edit do
+      render :template => "<%= plural_name %>/form"
+    end
+
+    response_for :create_fails, :update_fails do
+      flash[:error] = "There was a problem!"
       render :template => "<%= plural_name %>/form"
     end
   end
