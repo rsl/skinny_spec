@@ -11,6 +11,10 @@ describe <%= class_name %> do
     @<%= singular_name %> = <%= class_name %>.new
   end
   
+  after(:each) do
+    @<%= singular_name %>.destroy unless @<%= singular_name %>.new_record?
+  end
+  
   # Add your model specs here, please!
   # And don't forget about the association matchers built-in to skinny_spec like:
   # 
