@@ -2,10 +2,11 @@ require File.dirname(__FILE__) + '<%= '/..' * controller_class_nesting_depth %>/
 
 describe "<%= File.join(controller_class_path, controller_singular_name) %>/_<%= singular_name %>.html.<%= template_language %>" do
   before(:each) do
-<% if attributes.blank? -%>
-    @<%= singular_name %> = mock_and_assign(<%= model_name %>)
-<% else -%>
     @<%= singular_name %> = mock_and_assign(<%= model_name %>, :stub => {
+<% if attributes.blank? -%>
+      # Add your stub attributes and return values here like: 
+      # :name => "Foo", :created_at => 1.week.ago, :updated_at => nil
+<% else -%>
   <%- attributes.each_with_index do |attribute, index| -%>
     <%- case attribute.type -%>
       <%- when :string, :text -%>
@@ -20,8 +21,8 @@ describe "<%= File.join(controller_class_path, controller_singular_name) %>/_<%=
       :<%= attribute.name %> => nil<%= index < attributes.size - 1 ? "," : "" %>
     <%- end -%>
   <%- end -%>
-    })
 <% end -%>
+    })
     template.stub!(:<%= singular_name %>).and_return(@<%= singular_name %>)
   end
   
