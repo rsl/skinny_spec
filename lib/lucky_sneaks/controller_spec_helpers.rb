@@ -105,6 +105,21 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_find</tt>. This creates an expectation that
+      # the class never receives <tt>find</tt> at all.
+      def it_should_not_find(name)
+        name_string = name.to_s
+        name_message = if name_string == name_string.singularize
+          "a #{name}"
+        else
+          name
+        end
+        it "should not find #{name_message}" do
+          class_for(name).should_not_receive(:find)
+          eval_request
+        end
+      end
+      
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.new</tt>.
       # Takes optional <tt>params</tt> for the initialization arguments. Example
       # 
@@ -114,6 +129,15 @@ module LuckySneaks
       def it_should_initialize(name, options = {})
         it "should initialize a #{name}" do
           create_ar_class_expectation name, :new, params[options.delete(:params)], options
+          eval_request
+        end
+      end
+      
+      # Negative version of <tt>it_should_initialize</tt>. This creates an expectation
+      # that the class never recieves <tt>new</tt> at all.
+      def it_should_not_initialize(name)
+        it "should initialize a #{name}" do
+          class_for(name).should_not_receive(:new)
           eval_request
         end
       end
@@ -129,6 +153,15 @@ module LuckySneaks
       def it_should_save(name)
         it "should save the #{name}" do
           create_positive_ar_instance_expectation name, :save
+          eval_request
+        end
+      end
+      
+      # Negative version of <tt>it_should_update</tt>. This creates an expectation
+      # that the instance never receives <tt>save</tt> at all.
+      def it_should_not_save(name)
+        it "should not save the #{name}" do
+          instance_for(name).should_not_receive(:save)
           eval_request
         end
       end
@@ -150,6 +183,15 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_update</tt>. This creates an expectation
+      # that the instance never receives <tt>update_attributes</tt> at all.
+      def it_should_not_update(name)
+        it "should not update the #{name}" do
+          instance_for(name).should_not_receive(:update_attributes)
+          eval_request
+        end
+      end
+      
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#destroy</tt> on the named
       # instance. Example:
       # 
@@ -161,6 +203,15 @@ module LuckySneaks
       def it_should_destroy(name, options = {})
         it "should delete the #{name}" do
           create_positive_ar_instance_expectation name, :destroy
+          eval_request
+        end
+      end
+      
+      # Negative version of <tt>it_should_destroy</tt>. This creates an expectation
+      # that the instance never receives <tt>destroy</tt> at all.
+      def it_should_not_destroy(name)
+        it "should not destroy the #{name}" do
+          instance_for(name).should_not_receive(:destroy)
           eval_request
         end
       end
@@ -199,6 +250,16 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_find_and_assign</tt>. This creates an
+      # expectation that the class never receives <tt>find</tt> at all and that 
+      # no matching instance variable is ever created.
+      def it_should_not_find_and_assign(*names)
+        names.each do |name|
+          it_should_not_find name
+          it_should_assign name => :nil
+        end
+      end
+      
       # Wraps the separate expectations <tt>it_should_initialize</tt> and <tt>it_should_assign</tt>
       # for simple cases. If you need more control over the parameters of the initialization, this
       # isn't the right helper method and you should write out the two expectations separately.
@@ -211,6 +272,16 @@ module LuckySneaks
         names.each do |name|
           it_should_initialize name, :only_method => true
           it_should_assign name
+        end
+      end
+      
+      # Negative version of <tt>it_should_initialize_and_assign</tt>. This creates an
+      # expectation that the class never receives <tt>new</tt> at all and that 
+      # no matching instance variable is ever created.
+      def it_should_not_initialize_and_assign(*names)
+        names.each do |name|
+          it_should_not_find name
+          it_should_assign name => :nil
         end
       end
       
