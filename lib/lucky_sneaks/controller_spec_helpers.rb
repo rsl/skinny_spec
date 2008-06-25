@@ -115,7 +115,11 @@ module LuckySneaks
           name
         end
         it "should not find #{name_message}" do
-          class_for(name).should_not_receive(:find)
+          if name_string == name_string.singularize
+            class_for(name).should_not_receive(:find)
+          else
+            class_for(name).should_not_receive(:find).with(:all)
+          end
           eval_request
         end
       end
