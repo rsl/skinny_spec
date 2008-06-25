@@ -140,7 +140,7 @@ module LuckySneaks
     # <tt>mock_and_assign</tt>. Accepts <tt>option[:size]</tt> which sets the size
     # of the array (default is 3).
     def mock_and_assign_collection(klass, *args)
-      options = args.dup.extract_options!
+      options = args.extract_options!
       return_me = Array.new(options[:size] || 3) do
         mocked = if options[:stub]
           mock_model(klass, options[:stub])
