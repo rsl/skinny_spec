@@ -6,25 +6,51 @@ module LuckySneaks
   # to make your model specs a little more DRY. You might also be interested 
   # in checking out the example block [read: "describe"] level versions in of these
   # methods which can DRY things up even more:
-  # LuckySneaks::ModelSpecHelpers::ExampleGroupLevelMethods
+  # LuckySneaks::ModelSpecHelpers::ExampleGroupLevelMethods.
   # 
-  # <b>Note:</b> The validation matchers are only meant to be used for simple validation checking
-  # not as a one-size-fits-all solution.
+  # Also check out the methods in LuckySneaks::ModelSpecHelpers::AssociationMatcher
+  # for some helpful matcher helper methods to use with these methods if you want to spec
+  # options on your association setups.
   module ModelSpecHelpers
     include LuckySneaks::CommonSpecHelpers
     
     def self.included(base) # :nodoc:
       base.extend ExampleGroupLevelMethods
     end
-  
-    class AssociationMatcher # :nodoc:
-      def initialize(associated, macro)
+    
+    # These methods cannot be used alone but are used in compliment with the association
+    # matchers in LuckySneaks::ModelSpecHelpers like <tt>have_many</tt>. Example:
+    # 
+    #   describe User do
+    #     it "should have many memberships" do
+    #       User.should have_many(:memberships)
+    #     end
+    # 
+    #     it "should have many sites through memberships" do
+    #       User.should have_many(:sites).through(:memberships)
+    #     end
+    # 
+    #     it "should belong to a manager" do
+    #       User.should belong_to(:manager).with_counter_cache
+    #     end
+    #   end
+    # 
+    # <b>Note:</b> To spec these sorts of options using the example block helpers like
+    # <tt>it_should_have_many</tt>, just add them as options directly. This will use
+    # <tt>with_options</tt> rather than any specific matcher helpers but will have the same
+    # effects. Example:
+    # 
+    #   describe User do
+    #     it_should_have_many :sites, :through => :memberships
+    #   end
+    class AssociationMatcher
+      def initialize(associated, macro) # :nodoc:
         @associated = associated
         @macro = macro
         @options = {}
       end
 
-      def matches?(main_model)
+      def matches?(main_model) # :nodoc:
         unless main_model.respond_to?(:reflect_on_association)
           if main_model.class.respond_to?(:reflect_on_association)
             main_model = main_model.class
@@ -39,7 +65,7 @@ module LuckySneaks
         end
       end
 
-      def failure_message
+      def failure_message # :nodoc:
         if @not_model
           " expected: #{@not_model} to be a subclass of ActiveRecord::Base class, but was not"
         elsif @association
@@ -49,7 +75,7 @@ module LuckySneaks
         end
       end
 
-      def negative_failure_message
+      def negative_failure_message # :nodoc:
         if @association
           " expected: #{association_with(@options)}\n      got: #{association_with(@association.options)}"
         else
@@ -77,7 +103,7 @@ module LuckySneaks
         self
       end
 
-      def with_counter_cache(counter_cache = false)
+      def with_counter_cache(counter_cache = true)
         if counter_cache
           @options[:counter_cache] = counter_cache
         end
@@ -177,51 +203,118 @@ module LuckySneaks
     end
     
     # These methods are designed to be used at the example group [read: "describe"] level
-    # to simplify and DRY up common expectations. Most of these methods are wrappers for
+    # to simplify and DRY up common expectations. Some of these methods are wrappers for
     # matchers which can also be used on the example level [read: within an "it" block]. See
     # LuckySneaks::ModelSpecHelpers for more information.
+    # 
+    # <b>Note:</b> The validation matchers are only meant to be used for simple validation checking
+    # not as a one-size-fits-all solution.
     module ExampleGroupLevelMethods
-      # Creates an expectation that the current model being spec'd has a <tt>belongs_to</tt>
-      # association with the specified model.
+      # Creates an expectation that the current model being spec'd has a <tt>belong_to</tt>
+      # association with the specified model. Accepts optional arguments which are appended to
+      # the <tt>belong_to</tt> spec like this:
+      # 
+      #   it_should_belong_to :document, :counter_cache => true
+      # 
+      # which is the same as writing out:
+      # 
+      #   it "should belong to document" do
+      #     Comment.should belong_to(:document).with_options(:counter_cache => true)
+      #   end
+      # 
+      # If you want a more detailed spec description text, feel free to write this out in the long
+      # form and use <tt>belong_to</tt> and its related matcher helpers.
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
       def it_should_belong_to(model)
         it "should belong to a #{model}" do
-          class_or_instance.should belong_to(model)
+          if options.empty?
+            class_or_instance.should belong_to(models)
+          else
+            class_or_instance.should belong_to(models).with_options(options)
+          end
         end
       end
       
       # Creates an expectation that the current model being spec'd has a <tt>have_one</tt>
-      # association with the specified model.
+      # association with the specified model. Accepts optional arguments which are appended to
+      # the <tt>have_one</tt> spec like this:
+      # 
+      #   it_should_have_one :last_comment, :class_name => "Comment", :order => "created_at DESC"
+      # 
+      # which is the same as writing out:
+      # 
+      #   it "should have one document" do
+      #     Document.should have_one(:last_comment).with_options(:class_name => "Comment", :order => "created_at DESC")
+      #   end
+      # 
+      # If you want a more detailed spec description text, feel free to write this out in the long
+      # form and use <tt>have_one</tt> and its related matcher helpers.
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
       def it_should_have_one(model)
         it "should have one #{model}" do
-          class_or_instance.should have_one(model)
+          if options.empty?
+            class_or_instance.should have_one(models)
+          else
+            class_or_instance.should have_one(models).with_options(options)
+          end
         end
       end
       
       # Creates an expectation that the current model being spec'd has a <tt>have_many</tt>
-      # association with the specified model.
+      # association with the specified model. Accepts optional arguments which are appended to
+      # the <tt>have_many</tt> spec like this:
+      # 
+      #   it_should_have_many :memberships, :through => :sites
+      # 
+      # which is the same as writing out:
+      # 
+      #   it "should have many memberships" do
+      #     User.should have_many(:memberships).with_options(:through => :sites)
+      #   end
+      # 
+      # If you want a more detailed spec description text, feel free to write this out in the long
+      # form and use <tt>have_many</tt> and its related matcher helpers.
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
-      def it_should_have_many(models)
+      def it_should_have_many(models, options = {})
         it "should have many #{models}" do
-          class_or_instance.should have_many(models)
+          if options.empty?
+            class_or_instance.should have_many(models)
+          else
+            class_or_instance.should have_many(models).with_options(options)
+          end
         end
       end
       
       # Creates an expectation that the current model being spec'd has a <tt>have_and_belong_to_many</tt>
-      # association with the specified model.
+      # association with the specified model. Accepts optional arguments which are appended to
+      # the <tt>have_and_belong_to_many</tt> spec like this:
+      # 
+      #   it_should_have_and_belong_to_many :documents, :include => :attachments
+      # 
+      # which is the same as writing out:
+      # 
+      #   it "should belong to document" do
+      #     User.should have_and_belong_to_many(:documents).with_options(:include => :attachments)
+      #   end
+      # 
+      # If you want a more detailed spec description text, feel free to write this out in the long
+      # form and use <tt>have_and_belong_to_many</tt> and its related matcher helpers.
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
       def it_should_have_and_belong_to_many(models)
         it "should have and belong to many #{models}" do
-          class_or_instance.should have_and_belong_to_many(models)
+          if options.empty?
+            class_or_instance.should have_and_belong_to_many(models)
+          else
+            class_or_instance.should have_and_belong_to_many(models).with_options(options)
+          end
         end
       end
       

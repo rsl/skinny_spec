@@ -6,7 +6,7 @@ module LuckySneaks
   # to make your view specs less brittle and more DRY. You might also be interested 
   # in checking out the example block [read: "describe"] level versions in of these
   # methods which can DRY things up even more:
-  # LuckySneaks::ViewSpecHelpers::ExampleGroupLevelMethods
+  # LuckySneaks::ViewSpecHelpers::ExampleGroupLevelMethods.
   module ViewSpecHelpers
     include LuckySneaks::CommonSpecHelpers
     include ActionController::PolymorphicRoutes
