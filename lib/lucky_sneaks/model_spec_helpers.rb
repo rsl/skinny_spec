@@ -227,7 +227,7 @@ module LuckySneaks
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
-      def it_should_belong_to(model)
+      def it_should_belong_to(model, options = {})
         it "should belong to a #{model}" do
           if options.empty?
             class_or_instance.should belong_to(models)
@@ -254,7 +254,7 @@ module LuckySneaks
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
-      def it_should_have_one(model)
+      def it_should_have_one(model, options = {})
         it "should have one #{model}" do
           if options.empty?
             class_or_instance.should have_one(models)
@@ -308,7 +308,7 @@ module LuckySneaks
       # 
       # <b>Note:</b> The argument should be a symbol as in the model's association definition
       # and not the model's class name.
-      def it_should_have_and_belong_to_many(models)
+      def it_should_have_and_belong_to_many(models, options = {})
         it "should have and belong to many #{models}" do
           if options.empty?
             class_or_instance.should have_and_belong_to_many(models)
