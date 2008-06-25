@@ -213,25 +213,30 @@ module LuckySneaks
         end
       end
 
-      # Creates an expectation which calls <tt>allow_editing</tt> on the response
-      # from rendering the template. See that method for more details.
+      # Creates an expectation which calls <tt>allow_editing</tt> on the rendered
+      # template for each attribute specified. See the docs for <tt>allow_editing</tt>
+      # for more details.
       # 
       # <b>Note:</b> This method takes a string or symbol representing the instance
       # variable's name to send to <tt>allow_editing</tt>
       # not an instance variable, which would be nil in the scope of the example block.
-      def it_should_allow_editing(name, method)
-        it "should allow editing of @#{name}##{method}" do
-          do_render
-          response.should allow_editing(instance_for(name), method)
+      def it_should_allow_editing(instance_name, *attributes)
+        attributes.each do |attribute|
+          it "should allow editing of @#{instance_name}##{attribute}" do
+            do_render
+            response.should allow_editing(instance_for(instance_name), attribute)
+          end
         end
       end
       
       # Negative version of <tt>it_should_allow_editing</tt>. See that method for more
       # details.
-      def it_should_not_allow_editing(name, method)
-        it "should not allow editing of @#{name}##{method}" do
-          do_render
-          response.should_not allow_editing(instance_for(name), method)
+      def it_should_not_allow_editing(instance_name, *attributes)
+        attributes.each do |attribute|
+          it "should not allow editing of @#{instance_name}##{attribute}" do
+            do_render
+            response.should_not allow_editing(instance_for(instance_name), attribute)
+          end
         end
       end
       
