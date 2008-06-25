@@ -137,6 +137,25 @@ module LuckySneaks # :nodoc:
       end
     end
     
+    # Same as <tt>stub_find_one</tt> but setups the instance as the parent
+    # of the specified association. Example:
+    # 
+    #   stub_parent(Document, :comments)
+    # 
+    # This stubs <tt>Document.find</tt> as well as <tt>@document.memberships</tt>, which
+    # will return <tt>Comment</tt> class. This method is meant to be used in the
+    # controller for the child and for stubbing situations like this:
+    # 
+    #   @document = Document.find(params[:document_id])
+    #   @comments = @document.comments
+    def stub_parent(klass, options = {})
+      offspring = options.delete(:child)
+      returning stub_find_one(klass, options) do |member|
+        params[klass.name.foreign_key] = member.id
+        member.stub!(offspring).and_return(class_for(offspring))
+      end
+    end
+    
     # Alias for <tt>stub_find_one</tt> which additionally defines an implicit request <tt>get :show</tt>.
     def stub_show(klass, options = {})
       define_implicit_request :show
