@@ -78,7 +78,14 @@ module LuckySneaks
     # Wraps <tt>have_link_or_button_to polymorphic_path(instance)<tt> which
     # corresponds with the <tt>show</tt> method of the controller.
     def have_link_or_button_to_show(instance)
-      have_link_or_button_to polymorphic_path(instance)
+      path = polymorphic_path(instance)
+      have_tag(
+        "a[href='#{path}'],
+        form[action='#{path}'][method='get'] input,
+        form[action='#{path}'][method='get'] button,
+        form[action='#{path}'] input[name='_method'][value='get'] + input,
+        form[action='#{path}'] input[name='_method'][value='get'] + button"
+      )
     end
     alias have_link_to_show have_link_or_button_to_show
     alias have_button_to_show have_link_or_button_to_show
