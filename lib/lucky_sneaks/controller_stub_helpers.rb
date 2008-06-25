@@ -125,17 +125,18 @@ module LuckySneaks # :nodoc:
     def stub_find_one(klass, options = {})
       returning mock_model(klass) do |member|
         stub_out member, options.delete(:stub)
-        if options[:format]
-          stub_formatted member, options[:format]
-          params[:format] = options[:format]
+        if format = options.delete(:format)
+          stub_formatted member, format
+          params[:format] = format
         end
-        if options[:current_object]
+        if options.delete(:current_object)
           params[:id] = member.id
-          if options[:stub_ar]
-            stub_ar_method member, options[:stub_ar], options[:return]
+          if ar_stub = options.delete(:stub_ar)
+            stub_ar_method member, ar_stub, options.delete(:return)
           end
         end
         klass.stub!(:find).with(member.id.to_s).and_return(member)
+        klass.stub!(:find).with(member.id.to_s, hash_including(options)).and_return(member)
       end
     end
     

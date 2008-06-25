@@ -41,18 +41,15 @@ module LuckySneaks
   private
     def create_ar_class_expectation(name, method, argument = nil, options = {})
       args = []
-      if [:create, :update].include?(@controller_method)
-        args << (argument.nil? ? valid_attributes : argument)
-      else
+      unless options[:only_method]
         args << argument unless argument.nil?
+        options.reverse_merge!(valid_attributes) if [:create, :update].include?(@controller_method)
+        args << hash_including(options) unless options.empty?
       end
-      args << options unless options.empty?
       if args.empty?
-        return_value = class_for(name).send(method)
-        class_for(name).should_receive(method).and_return(return_value)
+        class_for(name).should_receive(method).and_return(instance_for(name))
       else
-        return_value = class_for(name).send(method, *args)
-        class_for(name).should_receive(method).with(*args).and_return(return_value)
+        class_for(name).should_receive(method).with(*args).and_return(instance_for(name))
       end
     end
     
@@ -197,7 +194,7 @@ module LuckySneaks
       # isn't the right helper method and you should write out the two expectations separately.
       def it_should_find_and_assign(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_assign name
         end
       end
@@ -212,7 +209,7 @@ module LuckySneaks
       # please use <tt>it_should_initialize_and_save</tt>.
       def it_should_initialize_and_assign(*names)
         names.each do |name|
-          it_should_initialize name
+          it_should_initialize name, :only_method => true
           it_should_assign name
         end
       end
@@ -226,7 +223,7 @@ module LuckySneaks
       # but not saved, just use <tt>it_should_initialize_and_assign</tt>.
       def it_should_initialize_and_save(*names)
         names.each do |name|
-          it_should_initialize name
+          it_should_initialize name, :only_method => true
           it_should_save name
         end
       end
@@ -240,7 +237,7 @@ module LuckySneaks
       # instance is found but not saved, just use <tt>it_should_find_and_assign</tt>.
       def it_should_find_and_update(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_update name
         end
       end
@@ -250,7 +247,7 @@ module LuckySneaks
       # isn't the right helper method and you should write out the two expectations separately.
       def it_should_find_and_destroy(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_destroy name
         end
       end
