@@ -230,9 +230,9 @@ module LuckySneaks
       def it_should_belong_to(model, options = {})
         it "should belong to a #{model}" do
           if options.empty?
-            class_or_instance.should belong_to(models)
+            class_or_instance.should belong_to(model)
           else
-            class_or_instance.should belong_to(models).with_options(options)
+            class_or_instance.should belong_to(model).with_options(options)
           end
         end
       end
@@ -257,9 +257,9 @@ module LuckySneaks
       def it_should_have_one(model, options = {})
         it "should have one #{model}" do
           if options.empty?
-            class_or_instance.should have_one(models)
+            class_or_instance.should have_one(model)
           else
-            class_or_instance.should have_one(models).with_options(options)
+            class_or_instance.should have_one(model).with_options(options)
           end
         end
       end
