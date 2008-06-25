@@ -5,7 +5,7 @@ describe "<%= File.join(controller_class_path, controller_singular_name) %>/form
     @<%= singular_name %> = mock_and_assign(<%= model_name %>, :stub => {
 <% if attributes.blank? -%>
       # Add your stub attributes and return values here like: 
-      # :name => "Foo", :created_at => 1.week.ago, :updated_at => nil
+      # :name => "Foo", :address => "815 Oceanic Drive"
 <% else -%>
   <%- attributes.each_with_index do |attribute, index| -%>
     <%- case attribute.type -%>
