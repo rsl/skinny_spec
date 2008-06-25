@@ -221,6 +221,7 @@ module LuckySneaks
       # variable's name to send to <tt>allow_editing</tt>
       # not an instance variable, which would be nil in the scope of the example block.
       def it_should_allow_editing(instance_name, *attributes)
+        attributes.flatten!
         attributes.each do |attribute|
           it "should allow editing of @#{instance_name}##{attribute}" do
             do_render
@@ -232,6 +233,7 @@ module LuckySneaks
       # Negative version of <tt>it_should_allow_editing</tt>. See that method for more
       # details.
       def it_should_not_allow_editing(instance_name, *attributes)
+        attributes.flatten!
         attributes.each do |attribute|
           it "should not allow editing of @#{instance_name}##{attribute}" do
             do_render
