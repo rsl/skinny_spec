@@ -21,7 +21,7 @@ describe "<%= File.join(controller_class_path, controller_singular_name) %>/form
       :<%= attribute.name %> => nil<%= index < attributes.size - 1 ? "," : "" %> # Could not determine valid attribute
     <%- end -%>
   <%- end -%>
-<% end -%>  
+<% end -%>
     })
   end
   
