@@ -40,11 +40,8 @@ module LuckySneaks # :nodoc:
           stub_formatted collection, format
           params[:format] = format
         end
-        if options.empty?
-          klass.stub!(:find).with(:all).and_return(collection)
-        else
-          klass.stub!(:find).with(:all, options).and_return(collection)
-        end
+        klass.stub!(:find).with(:all).and_return(collection)
+        klass.stub!(:find).with(:all, hash_including(options)).and_return(collection)
       end
     end
     
@@ -71,9 +68,9 @@ module LuckySneaks # :nodoc:
           params[:format] = format
         end
         klass.stub!(:new).and_return(member)
+        klass.stub!(:new).with(any_args).and_return(member)
         if options[:stub_save]
           stub_ar_method member, :save, options[:return]
-          klass.stub!(:new).with(params[options[:params]]).and_return(member)
         else
           member.stub!(:new_record?).and_return(true)
           member.stub!(:id).and_return(nil)
