@@ -142,12 +142,15 @@ module LuckySneaks # :nodoc:
     # 
     #   stub_parent(Document, :comments)
     # 
-    # This stubs <tt>Document.find</tt> as well as <tt>@document.comments</tt>, which
-    # will return <tt>Comment</tt> class. This method is meant to be used in the
-    # controller for the child and for stubbing situations like this:
+    # This stubs <tt>Document.find</tt>, <tt>@document.comments</tt> (which
+    # will return <tt>Comment</tt> class), as well as <tt>params[:document_id]</tt>.
+    # This method is meant to be used in the controller for the specified child
+    # (<tt>CommentsController</tt> in this instance) in situations like:
     # 
-    #   @document = Document.find(params[:document_id])
-    #   @comments = @document.comments
+    #   def index
+    #     @document = Document.find(params[:document_id])
+    #     @comments = @document.comments.find(:all)
+    #   end
     def stub_parent(klass, options = {})
       offspring = options.delete(:child)
       returning stub_find_one(klass, options) do |member|
