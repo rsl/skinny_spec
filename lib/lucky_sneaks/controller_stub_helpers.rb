@@ -142,7 +142,7 @@ module LuckySneaks # :nodoc:
     # 
     #   stub_parent(Document, :comments)
     # 
-    # This stubs <tt>Document.find</tt> as well as <tt>@document.memberships</tt>, which
+    # This stubs <tt>Document.find</tt> as well as <tt>@document.comments</tt>, which
     # will return <tt>Comment</tt> class. This method is meant to be used in the
     # controller for the child and for stubbing situations like this:
     # 
