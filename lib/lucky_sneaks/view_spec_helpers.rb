@@ -130,7 +130,7 @@ module LuckySneaks
       mocked = if options[:stub]
         mock_model(klass, options[:stub])
       else
-        mock_model(klass)
+        self.respond_to?(:stub_model) ? stub_model(klass) : mock_model(klass)
       end
       yield mocked if block_given?
       self.assigns[args.first || "#{klass}".underscore] = mocked
@@ -145,7 +145,7 @@ module LuckySneaks
         mocked = if options[:stub]
           mock_model(klass, options[:stub])
         else
-          mock_model(klass)
+          self.respond_to?(:stub_model) ? stub_model(klass) : mock_model(klass)
         end
         yield mocked if block_given?
         mocked
