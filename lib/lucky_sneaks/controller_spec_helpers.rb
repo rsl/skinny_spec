@@ -41,10 +41,14 @@ module LuckySneaks
   private
     def create_ar_class_expectation(name, method, argument = nil, options = {})
       args = []
-      unless options[:only_method]
+      unless options.delete(:only_method)
         args << argument unless argument.nil?
-        options.reverse_merge!(valid_attributes) if [:create, :update].include?(@controller_method)
-        args << hash_including(options) unless options.empty?
+        options.reverse_merge!(valid_attributes) if @controller_method == :create
+        if options.empty?
+          args << hash_including
+        else
+          args << hash_including(options)
+        end
       end
       if args.empty?
         class_for(name).should_receive(method).and_return(instance_for(name))
@@ -182,7 +186,7 @@ module LuckySneaks
       # for the inevitable re-rendering of the form template.
       def it_should_update(name, options = {})
         it "should update the #{name}" do
-          create_positive_ar_instance_expectation name, :update_attributes, params[options[:params]]
+          create_positive_ar_instance_expectation name, :update_attributes, params[name]
           eval_request
         end
       end

@@ -68,7 +68,7 @@ module LuckySneaks # :nodoc:
           params[:format] = format
         end
         klass.stub!(:new).and_return(member)
-        klass.stub!(:new).with(any_args).and_return(member)
+        klass.stub!(:new).with(hash_including(options[:params])).and_return(member)
         if options[:stub_save]
           stub_ar_method member, :save, options[:return]
         else
@@ -92,9 +92,11 @@ module LuckySneaks # :nodoc:
     # are provided an <tt>ArgumentError</tt> will be raised.
     def stub_create(klass, options = {})
       define_implicit_request :create
+      class_name = klass.name.underscore
+      options[:params] ||= params[class_name]
       if options[:params].nil?
         if self.respond_to?(:valid_attributes)
-          params[klass.name.underscore.to_sym] = valid_attributes
+          params[class_name] = valid_attributes
           options[:params] = valid_attributes
         else
           error_message = "Params for creating #{klass} could not be determined. "
@@ -129,7 +131,7 @@ module LuckySneaks # :nodoc:
         if options.delete(:current_object)
           params[:id] = member.id
           if ar_stub = options.delete(:stub_ar)
-            stub_ar_method member, ar_stub, options.delete(:return)
+            stub_ar_method member, ar_stub, options.delete(:return), options.delete(:update_params)
           end
         end
         klass.stub!(:find).with(member.id.to_s).and_return(member)
@@ -180,7 +182,18 @@ module LuckySneaks # :nodoc:
     # are provided an <tt>ArgumentError</tt> will be raised.
     def stub_update(klass, options = {})
       define_implicit_request :update
-      stub_find_one klass, options.merge(:current_object => true, :stub_ar => :update_attributes)
+      if options[:params].nil?
+        if self.respond_to?(:valid_attributes)
+          params[klass.name.underscore.to_sym] = valid_attributes
+          update_params = valid_attributes
+        else
+          error_message = "Params for creating #{klass} could not be determined. "
+          error_message << "Please define valid_attributes method in the base 'describe' block "
+          error_message << "or manually set params in the before block."
+          raise ArgumentError, error_message
+        end
+      end
+      stub_find_one klass, options.merge(:current_object => true, :stub_ar => :update_attributes, :update_params => update_params)
     end
 
     # Alias for <tt>stub_find_one</tt> which additionally defines an implicit request <tt>delete :destroy</tt>
@@ -212,8 +225,12 @@ module LuckySneaks # :nodoc:
     
     # Stubs out ActiveRecord::Base methods like #save, #update_attributes, etc
     # that may be called on a found or instantiated mock_model instance.
-    def stub_ar_method(object, method, return_value)
-      object.stub!(method).and_return(return_value ? false : true)
+    def stub_ar_method(object, method, return_value, params = {})
+      if params.blank?
+        object.stub!(method).and_return(return_value ? false : true)
+      else
+        object.stub!(method).with(hash_including(params)).and_return(return_value ? false : true)
+      end
     end
   end
 end
