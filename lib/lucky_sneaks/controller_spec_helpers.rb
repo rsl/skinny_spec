@@ -44,11 +44,7 @@ module LuckySneaks
       unless options.delete(:only_method)
         args << argument unless argument.nil?
         options.reverse_merge!(valid_attributes) if @controller_method == :create
-        if options.empty?
-          args << hash_including
-        else
-          args << hash_including(options)
-        end
+        args << hash_including(options) unless options.empty?
       end
       if args.empty?
         class_for(name).should_receive(method).and_return(instance_for(name))
