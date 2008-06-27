@@ -106,7 +106,8 @@ module LuckySneaks
       path = polymorphic_path(instance)
       have_tag(
         "form[action='#{path}'] input[name='_method'][value='delete'] + input,
-        form[action='#{path}'] input[name='_method'][value='delete'] + button"
+        form[action='#{path}'] input[name='_method'][value='delete'] + button,
+        a[href=\"#{path}\"][onclick*=\"f.method = 'POST'\"][onclick*=\"m.setAttribute('name', '_method'); m.setAttribute('value', 'delete')\"]"
       )
     end
     
