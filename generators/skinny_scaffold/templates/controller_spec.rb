@@ -15,7 +15,7 @@ describe <%= controller_class_name %>Controller do
       <%- when :boolean -%>
       "<%= attribute.name %>" => false<%= index < attributes.size - 1 ? "," : "" %>
       <%- when :date, :datetime, :time, :timestamp -%>
-      "<%= attribute.name %>" => 1.week.ago<%= index < attributes.size - 1 ? "," : "" %>
+      "<%= attribute.name %>" => "<%= 1.week.ago.to_s :db %>"<%= index < attributes.size - 1 ? "," : "" %>
       <%- else -%>
       "<%= attribute.name %>" => nil<%= index < attributes.size - 1 ? "," : "" %> # Could not determine valid attribute
     <%- end -%>
