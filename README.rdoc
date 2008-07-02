@@ -82,8 +82,16 @@ use <tt>stub_find_all</tt>, <tt>stub_find_one</tt>, and <tt>stub_initialize</tt>
 for this is because the former methods actually save us a step by defining an implicit 
 controller method request. If you add a new method to your resource routing, you'll want to
 use the helper method <tt>define_request</tt> in those example groups to define an explicit
-request. You can also define a method called <tt>shared_request</tt> to "share a
-<tt>define_request</tt>" across shared describe blocks, like so:
+request, like so:
+
+  describe "PUT :demote" do
+    define_request { put :demote }
+    
+    # ...
+  end
+
+You can also define a method called <tt>shared_request</tt> to "share" a
+<tt>define_request</tt> across nested describe blocks, like so:
 
   describe "POST :create" do
     def shared_request
@@ -100,15 +108,21 @@ request. You can also define a method called <tt>shared_request</tt> to "share a
   end
   
 Note: When you're adding longer, more complicated controller specs you can still leverage
-implicit and shared requests by calling <tt>do_request</tt> in your spec as in the following
+implicit and explicit requests by calling <tt>do_request</tt> in your spec as in the following
 example:
 
-  # Let's assume this controller is _not_ CategoriesController
+  # Note this controller is UsersController and _not_ CategoriesController
   # and that loading the categories isn't part of the default actions
-  describe "GET :index" do
+  # and cannot use the <tt>stub_<i>controller_method</i></tt> helpers
+  # [which create implicit requests based on the controller method in the name]
+  # but uses <tt>stub_find_all</tt> instead
+  describe "GET :new" do
     before(:each) do
+      @user = stub_new(User)
       @categories = stub_find_all(Category)
     end
+    
+    # ...
     
     it "should preload categories" do
       Category.should_receive(:find).with(:all)
