@@ -1,5 +1,5 @@
 # Let's make sure everyone else is loaded
-require File.expand_path(File.dirname(__FILE__) + "/../../../../config/environment")
+require File.expand_path(RAILS_ROOT + "/config/environment")
 require 'spec'
 require 'spec/rails'
 begin
