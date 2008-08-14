@@ -129,7 +129,7 @@ module LuckySneaks
     def mock_and_assign(klass, *args)
       options = args.extract_options!
       mocked = if options[:stub]
-        mock_model(klass, options[:stub])
+        self.respond_to?(:stub_model) ? stub_model(klass, options[:stub]) : mock_model(klass, options[:stub])
       else
         self.respond_to?(:stub_model) ? stub_model(klass) : mock_model(klass)
       end
@@ -144,7 +144,7 @@ module LuckySneaks
       options = args.extract_options!
       return_me = Array.new(options[:size] || 3) do
         mocked = if options[:stub]
-          mock_model(klass, options[:stub])
+          self.respond_to?(:stub_model) ? stub_model(klass, options[:stub]) : mock_model(klass, options[:stub])
         else
           self.respond_to?(:stub_model) ? stub_model(klass) : mock_model(klass)
         end
