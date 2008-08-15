@@ -46,6 +46,7 @@ module LuckySneaks
         options.reverse_merge!(valid_attributes) if @controller_method == :create
         args << hash_including(options) unless options.empty?
       end
+      method = options.delete(:find_method) if options[:find_method]
       if args.empty?
         class_for(name).should_receive(method).and_return(instance_for(name))
       else
@@ -70,12 +71,14 @@ module LuckySneaks
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.find</tt>.
       # Examples:
       # 
-      #   it_should_find :foos                                 # => Foo.should_receive(:find).with(:all)
-      #   it_should_find :foos, :all                           # An explicit version of the above
-      #   it_should_find :foos, :conditions => {:foo => "bar"} # => Foo.should_receive(:find).with(:all, :conditions => {"foo" => "bar"}
-      #   it_should_find :foo                                  # => Foo.should_recieve(:find).with(@foo.id.to_s)
-      #   it_should_find :foo, :params => "id"                 # => Foo.should_receive(:find).with(params[:id].to_s)
-      #   it_should_find :foo, 2                               # => Foo.should_receive(:find).with("2")
+      #   it_should_find :foos                                      # => Foo.should_receive(:find).with(:all)
+      #   it_should_find :foos, :all                                # An explicit version of the above
+      #   it_should_find :foos, :conditions => {:foo => "bar"}      # => Foo.should_receive(:find).with(:all, :conditions => {"foo" => "bar"}
+      #   it_should_find :foos, "joe", :method => :find_all_by_name # Foo.should_receive(:find_all_by_name).with("joe")
+      #   it_should_find :foo                                       # => Foo.should_recieve(:find).with(@foo.id.to_s)
+      #   it_should_find :foo, :params => "id"                      # => Foo.should_receive(:find).with(params[:id].to_s)
+      #   it_should_find :foo, 2                                    # => Foo.should_receive(:find).with("2")
+      #   it_should_find :foo, "joe", :method => :find_by_name      # => Foo.should_recieve(:find_by_name).with("joe")
       # 
       # <b>Note:</b> All params (key and value) will be strings if they come from a form element and are handled
       # internally with this expectation.

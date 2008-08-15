@@ -26,6 +26,9 @@ module LuckySneaks # :nodoc:
     # Stubs out <tt>find :all</tt> and returns a collection of <tt>mock_model</tt>
     # instances of that class. Accepts the following options:
     # 
+    # <b>:method</b>:: Method to use as finder call. Default is <tt>:find</tt>.
+    #                  <b>Note:</b> When specifying the method, the call is stubbed
+    #                  to accept any arguments. Caveat programmer.
     # <b>:format</b>:: Format of the request. Used to only add <tt>to_xml</tt> and 
     #                  <tt>to_json</tt> when actually needed.
     # <b>:size</b>::   Number of instances to return in the result. Default is 3.
@@ -40,8 +43,13 @@ module LuckySneaks # :nodoc:
           stub_formatted collection, format
           params[:format] = format
         end
-        klass.stub!(:find).with(:all).and_return(collection)
-        klass.stub!(:find).with(:all, hash_including(options)).and_return(collection)
+        if find_method = options[:find_method]
+          # Not stubbing specific arguments here
+          klass.stub!(find_method).and_return(collection)
+        else
+          klass.stub!(:find).with(:all).and_return(collection)
+          klass.stub!(:find).with(:all, hash_including(options)).and_return(collection)
+        end
       end
     end
     
@@ -111,9 +119,10 @@ module LuckySneaks # :nodoc:
     # Stubs out <tt>find</tt> and returns a single <tt>mock_model</tt>
     # instances of that class. Accepts the following options:
     # 
-    # <b>:format</b>::  Format of the request. Used to only add <tt>to_xml</tt> and 
-    #                   <tt>to_json</tt> when actually needed.
-    # <b>:stub</b>::    Additional methods to stub on the instances
+    # <b>:method</b>:: Method to use as finder call. Default is <tt>:find</tt>.
+    # <b>:format</b>:: Format of the request. Used to only add <tt>to_xml</tt> and 
+    #                  <tt>to_json</tt> when actually needed.
+    # <b>:stub</b>::   Additional methods to stub on the instances
     # 
     # Any additional options will be passed as arguments to <tt>find</tt>.You will want
     # to make sure to pass those arguments to the <tt>it_should_find</tt> spec as well.
@@ -134,8 +143,9 @@ module LuckySneaks # :nodoc:
             stub_ar_method member, ar_stub, options.delete(:return), options.delete(:update_params)
           end
         end
-        klass.stub!(:find).with(member.id.to_s).and_return(member)
-        klass.stub!(:find).with(member.id.to_s, hash_including(options)).and_return(member)
+        find_method = options.delete(:find_method) || :find
+        klass.stub!(find_method).with(member.id.to_s).and_return(member)
+        klass.stub!(find_method).with(member.id.to_s, hash_including(options)).and_return(member)
       end
     end
     
