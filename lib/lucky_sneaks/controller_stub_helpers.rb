@@ -152,7 +152,7 @@ module LuckySneaks # :nodoc:
     # Same as <tt>stub_find_one</tt> but setups the instance as the parent
     # of the specified association. Example:
     # 
-    #   stub_parent(Document, :comments)
+    #   stub_parent(Document, :child => :comments)
     # 
     # This stubs <tt>Document.find</tt>, <tt>@document.comments</tt> (which
     # will return <tt>Comment</tt> class), as well as <tt>params[:document_id]</tt>.
