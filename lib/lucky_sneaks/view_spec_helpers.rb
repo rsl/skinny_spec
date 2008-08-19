@@ -48,7 +48,8 @@ module LuckySneaks
           select[name='#{instance_name}[#{attribute}]'],
           textarea[name='#{instance_name}[#{attribute}]'],
           input[type='checkbox'][name='#{instance_name}[#{attribute}]'],
-          input[type='checkbox'][name='#{instance_name}[#{attribute.to_s.tableize.singularize}_ids][]']"
+          input[type='checkbox'][name='#{instance_name}[#{attribute.to_s.tableize.singularize}_ids][]'],
+          input[type='radio'][name='#{instance_name}[#{attribute}]']"
         )
       end
     end
