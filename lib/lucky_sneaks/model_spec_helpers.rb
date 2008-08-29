@@ -417,7 +417,7 @@ module LuckySneaks
       
       def default_error_message(attribute)
         if defined?(I18n)
-          I18n.translate attribute, :scope => "active_record.error_messages"
+          I18n.translate attribute, :scope => "activerecord.errors.messages"
         else
           ActiveRecord::Errors.default_error_messages[attribute]
         end
