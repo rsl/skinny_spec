@@ -43,7 +43,6 @@ module LuckySneaks
       args = []
       unless options.delete(:only_method)
         args << argument unless argument.nil?
-        options.reverse_merge!(valid_attributes) if @controller_method == :create
         args << hash_including(options) unless options.empty?
       end
       method = options.delete(:find_method) if options[:find_method]

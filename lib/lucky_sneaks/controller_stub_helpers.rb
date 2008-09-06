@@ -6,22 +6,6 @@ module LuckySneaks # :nodoc:
   # file even more. You are encouraged to use these methods to setup the basic calls for your
   # resources and only resort to the other methods when mocking and stubbing secondary objects
   # and calls.
-  # 
-  # Both <tt>stub_create</tt> and <tt>stub_update</tt> benefit from having a <tt>valid_attributes</tt>
-  # method defined at the top level of your example groups, ie the top-most "describe" block
-  # of the spec file. If you did not generate your specs with <tt>skinny_scaffold</tt> or
-  # <tt>skinny_resourceful</tt> generators, you can simply write a method like the following
-  # for yourself:
-  # 
-  #   def valid_attributes
-  #     {
-  #       "foo" => "bar",
-  #       "baz" => "quux"
-  #     }
-  #   end
-  # 
-  # Note this method employs strings as both the key and values to best replicate the way
-  # they are used in actual controllers where the params will come from a form.
   module ControllerStubHelpers
     # Stubs out <tt>find :all</tt> and returns a collection of <tt>mock_model</tt>
     # instances of that class. Accepts the following options:
@@ -45,6 +29,7 @@ module LuckySneaks # :nodoc:
         end
         if find_method = options[:find_method]
           # Not stubbing specific arguments here
+          # If you need more specificity, write a custom example
           klass.stub!(find_method).and_return(collection)
         else
           klass.stub!(:find).with(:all).and_return(collection)
@@ -94,25 +79,12 @@ module LuckySneaks # :nodoc:
     
     # Alias for <tt>stub_initialize</tt> which additionally defines an implicit request <tt>post :create</tt>.
     # 
-    # <b>Note:</b> If <tt>stub_create<tt> is provided an optional <tt>:params</tt> hash
-    # or the method <tt>valid_attributes</tt> is defined within its scope,
-    # those params will be added to the example's <tt>params</tt> object. If <i>neither</i>
-    # are provided an <tt>ArgumentError</tt> will be raised.
+    # <b>Note:</b> If <tt>stub_create<tt> is provided an optional <tt>:params</tt> hash,
+    # those params will be added to the example's <tt>params</tt> object.
     def stub_create(klass, options = {})
       define_implicit_request :create
       class_name = klass.name.underscore
       options[:params] ||= params[class_name]
-      if options[:params].nil?
-        if self.respond_to?(:valid_attributes)
-          params[class_name] = valid_attributes
-          options[:params] = valid_attributes
-        else
-          error_message = "Params for creating #{klass} could not be determined. "
-          error_message << "Please define valid_attributes method in the base 'describe' block "
-          error_message << "or manually set params in the before block."
-          raise ArgumentError, error_message
-        end
-      end
       stub_initialize klass, options.merge(:stub_save => true)
     end
     
@@ -186,24 +158,11 @@ module LuckySneaks # :nodoc:
     # Alias for <tt>stub_find_one</tt> which additionally defines an implicit request <tt>put :update</tt>
     # and stubs out the <tt>update_attribute</tt> method on the instance as well.
     # 
-    # <b>Note:</b> If <tt>stub_update<tt> is provided an optional <tt>:params</tt> hash
-    # or the method <tt>valid_attributes</tt> is defined within its scope,
-    # those params will be added to the example's <tt>params</tt> object. If <i>neither</i>
-    # are provided an <tt>ArgumentError</tt> will be raised.
+    # <b>Note:</b> If <tt>stub_update<tt> is provided an optional <tt>:params</tt> hash,
+    # those params will be added to the example's <tt>params</tt> object.
     def stub_update(klass, options = {})
       define_implicit_request :update
-      if options[:params].nil?
-        if self.respond_to?(:valid_attributes)
-          params[klass.name.underscore.to_sym] = valid_attributes
-          update_params = valid_attributes
-        else
-          error_message = "Params for creating #{klass} could not be determined. "
-          error_message << "Please define valid_attributes method in the base 'describe' block "
-          error_message << "or manually set params in the before block."
-          raise ArgumentError, error_message
-        end
-      end
-      stub_find_one klass, options.merge(:current_object => true, :stub_ar => :update_attributes, :update_params => update_params)
+      stub_find_one klass, options.merge(:current_object => true, :stub_ar => :update_attributes)
     end
 
     # Alias for <tt>stub_find_one</tt> which additionally defines an implicit request <tt>delete :destroy</tt>

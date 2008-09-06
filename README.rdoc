@@ -39,12 +39,6 @@ specs) to see what's new and different with Skinny Spec.
 Let's look at the controller specs.
 
   describe UsersController do
-    def valid_attributes(args = {})
-      {
-        # Add valid attributes for the your params[:user] here!
-      }.merge(args)
-    end
-
     describe "GET :index" do
       before(:each) do
         @users = stub_index(User)
@@ -68,12 +62,7 @@ Let's look at the controller specs.
     
     # ...
 
-First thing you should see is a method definition for 
-<tt>valid_attributes</tt>. This will be used later by the <tt>create</tt> and <tt>update</tt>
-specs to more accurately represent how the controller works in actual practice by supplying
-somewhat real data for the <tt>params</tt> coming from the HTML forms.
-
-Next we find an example group for <tt>GET :index</tt>. That <tt>stub_index</tt> method there
+First thing you should see is an example group for <tt>GET :index</tt>. That <tt>stub_index</tt> method there
 does a lot of work behind the curtain. I'll leave it up to you to check the documentation for it
 (and its brothers and sister methods like <tt>stub_new</tt>) but I will point out that the
 methods named <tt>stub_<i>controller_method</i></tt> should only be used for stubbing and
