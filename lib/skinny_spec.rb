@@ -4,7 +4,7 @@ require 'spec'
 require 'spec/rails'
 begin
   require 'ruby2ruby'
-rescue
+rescue LoadError
   puts "-----"
   puts "Attention: skinny_spec requires ruby2ruby for nicer route descriptions"
   puts "It is highly recommended that you install it: sudo gem install ruby2ruby"
