@@ -199,18 +199,26 @@ module LuckySneaks
       # not an instance variable, which would be nil in the scope of the example block.
       # If you use namespacing for your <tt>form_for</tt>, you'll have to manually write out
       # a similar spec.
-      def it_should_have_form_for(name)
+      def it_should_have_form_for(name, options = {})
         it "should have a form_for(@#{name})" do
-          template.should_receive(:form_for).with(instance_for(name))
+          if options.empty?
+            template.should_receive(:form_for).with(instance_for(name))
+          else
+            template.should_receive(:form_for).with(instance_for(name), hash_including(options))
+          end
           do_render
         end
       end
       
       # Negative version of <tt>it_should_have_form_for</tt>. See that method for more
       # details.
-      def it_should_not_have_form_for(name)
+      def it_should_not_have_form_for(name, options = {})
         it "should not have a form_for(@#{name})" do
-          template.should_not_receive(:form_for).with(instance_for(name))
+          if options.empty?
+            template.should_not_receive(:form_for).with(instance_for(name))
+          else
+            template.should_not_receive(:form_for).with(instance_for(name), hash_including(options))
+          end
           do_render
         end
       end
