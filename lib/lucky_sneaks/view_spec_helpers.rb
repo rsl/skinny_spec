@@ -479,6 +479,24 @@ module LuckySneaks
       alias it_should_have_link_to_delete_each it_should_link_to_delete_each
       alias it_should_have_button_to_delete_each it_should_link_to_delete_each
       alias it_should_have_button_or_link_to_delete_each it_should_link_to_delete_each
+      
+      # Creates an expectation that the template should call <tt>render :partial</tt>
+      # with the specified template.
+      def it_should_render_partial(name)
+        it "should render :partial => '#{name}'" do
+          template.should_receive(:render).with(hash_including(:partial => name))
+          do_render
+        end
+      end
+      
+      # Negative version of <tt>it_should_render_partial</tt>. See that method
+      # for more details.
+      def it_should_not_render_partial(name)
+        it "should not render :partial => '#{name}'" do
+          template.should_not_receive(:render).with(hash_including(:partial => name))
+          do_render
+        end
+      end
     end
   end
 end
