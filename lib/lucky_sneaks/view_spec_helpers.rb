@@ -21,7 +21,7 @@ module LuckySneaks
       have_tag("form[action=#{path}]")
     end
     
-    # Wraps a matcher that checks is the receiver contains any of several form elements
+    # Wraps a matcher that checks if the receiver contains any of several form elements
     # that would return sufficient named parameters to allow editing of the specified
     # attribute on the specified instance. Example:
     # 
@@ -52,6 +52,15 @@ module LuckySneaks
           input[type='radio'][name='#{instance_name}[#{attribute}]']"
         )
       end
+    end
+    
+    # Wraps a matcher that checks if the receiver contains a <tt>FORM</tt> element
+    # whose <tt>enctype</tt> attribute is set to <tt>"multipart/form-data"<tt>
+    # and contains an <tt>INPUT</tt> element whose <tt>name</tt> attribute correlates
+    # with the provided instance and attribute.
+    def allow_uploading(instance, attribute)
+      instance_name = instance.class.name.underscore.downcase
+      have_tag("form[enctype='multipart/form-data'] input[type='file'][name='#{instance_name}[#{attribute}]']")
     end
 
     # Wraps a matcher that checks if the receiver contains an <tt>A</tt> element (link) 
@@ -248,6 +257,35 @@ module LuckySneaks
           it "should not allow editing of @#{instance_name}##{attribute}" do
             do_render
             response.should_not allow_editing(instance_for(instance_name), attribute)
+          end
+        end
+      end
+      
+      # Creates an expectation which calls <tt>allow_uploading</tt> on the rendered
+      # template for each attribute specified. See the docs for <tt>allow_uploading</tt>
+      # for more details.
+      # 
+      # <b>Note:</b> This method takes a string or symbol representing the instance
+      # variable's name to send to <tt>allow_uploading</tt>
+      # not an instance variable, which would be nil in the scope of the example block.
+      def it_should_allow_uploading(instance_name, *attributes)
+        attributes.flatten!
+        attributes.each do |attribute|
+          it "should allow editing of @#{instance_name}##{attribute}" do
+            do_render
+            response.should allow_uploading(instance_for(instance_name), attribute)
+          end
+        end
+      end
+      
+      # Negative version of <tt>it_should_allow_uploading</tt>. See that method for more
+      # details.
+      def it_should_not_allow_uploading(instance_name, *attributes)
+        attributes.flatten!
+        attributes.each do |attribute|
+          it "should not allow editing of @#{instance_name}##{attribute}" do
+            do_render
+            response.should_not allow_uploading(instance_for(instance_name), attribute)
           end
         end
       end
