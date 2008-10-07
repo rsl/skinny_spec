@@ -491,6 +491,17 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_redirect_to</tt>.
+      def it_should_not_redirect_to(hint = nil, &route)
+        if hint.nil? && route.respond_to?(:to_ruby)
+          hint = route.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
+        end
+        it "should not redirect to #{(hint || route)}" do
+          eval_request
+          response.should_not redirect_to(instance_eval(&route))
+        end
+      end
+      
     private
       def it_should_assign_instance_variable(name, value)
         expectation_proc = case value
