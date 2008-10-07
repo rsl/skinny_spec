@@ -354,7 +354,7 @@ module LuckySneaks
               self.send(collection)[key].should == value
             end
           elsif block_given?
-            self.send(collection)[key].should == block.call
+            self.send(collection)[key].should == instance_eval(&block)
           else
             self.send(collection)[key].should_not be_nil
           end
