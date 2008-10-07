@@ -246,6 +246,16 @@ module LuckySneaks
         end
       end
       
+      # Essentially shorthand for <tt>it_should_assign name => :nil</tt>. This method can take multiple
+      # instance variable names, creating this shorthand for each name. See the docs for
+      # <tt>it_should_assign</tt> for more information.
+      def it_should_not_assign(*names)
+        names.each do |name|
+          # Assuming name is a symbol
+          it_should_assign name => :nil
+        end
+      end
+      
       # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_assign</tt>
       # for simple cases. If you need more control over the parameters of the find, this
       # isn't the right helper method and you should write out the two expectations separately.
