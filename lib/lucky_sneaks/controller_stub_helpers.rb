@@ -61,7 +61,9 @@ module LuckySneaks # :nodoc:
           params[:format] = format
         end
         klass.stub!(:new).and_return(member)
-        klass.stub!(:new).with(hash_including(options[:params])).and_return(member)
+        if options[:params]
+          klass.stub!(:new).with(hash_including(options[:params])).and_return(member)
+        end
         if options[:stub_save]
           stub_ar_method member, :save, options[:return]
         else
