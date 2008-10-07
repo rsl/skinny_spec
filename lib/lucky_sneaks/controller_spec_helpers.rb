@@ -56,10 +56,8 @@ module LuckySneaks
     def create_positive_ar_instance_expectation(name, method, *args)
       instance = instance_for(name)
       if args.empty?
-        return_value = instance.send(method)
         instance.should_receive(method).and_return(true)
       else
-        return_value = instance.send(method, *args)
         instance.should_receive(method).with(*args).and_return(true)
       end
     end
