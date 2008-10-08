@@ -500,6 +500,16 @@ module LuckySneaks
         end
       end
       
+      # Creates an expectation that the controller method redirects back to the previous page
+      def it_should_redirect_to_referer
+        it "should redirect to the referring page" do
+          request.env["HTTP_REFERER"] = "http://test.host/referer"
+          eval_request
+          response.should redirect_to("http://test.host/referer")
+        end
+      end
+      alias it_should_redirect_to_referrer it_should_redirect_to_referer
+      
     private
       def it_should_assign_instance_variable(name, value)
         expectation_proc = case value
