@@ -328,6 +328,17 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_validate_presence_of</tt>. See that method for more
+      # details. You'd probably only be using this in a nested example block to compare that
+      # one scenario validates presence and another does not (because of conditions in
+      # <tt>:if/:unless</tt>).
+      def it_should_not_validate_presence_of(attribute, message = default_error_message(:blank))
+        it "should be valid if #{attribute} is blank" do
+          instance.send "#{attribute}=", nil
+          instance.errors_on(attribute).should_not include(message)
+        end
+      end
+      
       # Creates an expectation that the current model being spec'd <tt>validates_numericality_of</tt>
       # the specified attribute. Takes an optional custom message to match the one in the model's
       # validation.
@@ -335,6 +346,17 @@ module LuckySneaks
         it "should validate #{attribute} is a numeric" do
           instance.send "#{attribute}=", "NaN"
           instance.errors_on(attribute).should include(message)
+        end
+      end
+      
+      # Negative version of <tt>it_should_validate_numericality_of</tt>. See that method for more
+      # details. You'd probably only be using this in a nested example block to compare that
+      # one scenario validates presence and another does not (because of conditions in
+      # <tt>:if/:unless</tt>).
+      def it_should_not_validate_numericality_of(attribute, message = default_error_message(:not_a_number))
+        it "should not validate #{attribute} is a numeric" do
+          instance.send "#{attribute}=", "NaN"
+          instance.errors_on(attribute).should_not include(message)
         end
       end
       
@@ -357,10 +379,23 @@ module LuckySneaks
       # <b>Note:</b> This method will fail completely if <tt>valid_attributes</tt>
       # does not provide all the attributes needed to create a valid record.
       def it_should_validate_uniqueness_of(attribute, message = default_error_message(:taken))
-        it "should validate #{attribute} confirmation" do
+        it "should validate uniqueness of #{attribute}" do
           previous_instance = class_for(self.class.description_text).create!(valid_attributes)
           instance.attributes = valid_attributes
           instance.errors_on(attribute).should include(message)
+          previous_instance.destroy
+        end
+      end
+      
+      # Negative version of <tt>it_should_validate_uniqueness_of</tt>. See that method for more
+      # details. You'd probably only be using this in a nested example block to compare that
+      # one scenario validates presence and another does not (because of conditions in
+      # <tt>:if/:unless</tt>).
+      def it_should_not_validate_uniqueness_of(attribute, message = default_error_message(:taken))
+        it "should not validate uniqueness of #{attribute}" do
+          previous_instance = class_for(self.class.description_text).create!(valid_attributes)
+          instance.attributes = valid_attributes
+          instance.errors_on(attribute).should_not include(message)
           previous_instance.destroy
         end
       end
@@ -405,6 +440,7 @@ module LuckySneaks
           end
         end
       end
+      
       # Creates an expectation that the current model being spec'd doesn't allow mass-assignment
       # of the specified attribute.
       def it_should_not_mass_assign(attribute)
