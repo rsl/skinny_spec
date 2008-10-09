@@ -118,6 +118,9 @@ module LuckySneaks # :nodoc:
           end
         end
         find_method = options.delete(:find_method) || :find
+        # Stubbing string and non-string just to be safe
+        klass.stub!(find_method).with(member.id).and_return(member)
+        klass.stub!(find_method).with(member.id, hash_including(options)).and_return(member)
         klass.stub!(find_method).with(member.id.to_s).and_return(member)
         klass.stub!(find_method).with(member.id.to_s, hash_including(options)).and_return(member)
       end
