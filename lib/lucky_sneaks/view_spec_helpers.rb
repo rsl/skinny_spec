@@ -200,6 +200,18 @@ module LuckySneaks
         end
       end
       
+      # Negative version of <tt>it_should_submit_to</tt>. See that method for more
+      # details.
+      def it_should_not_submit_to(hint = nil, &route)
+        if hint.nil? && route.respond_to?(:to_ruby)
+          hint = route.to_ruby.gsub(/(^proc \{)|(\}$)/, '').strip
+        end
+        it "should not submit to #{(hint || route)}" do
+          do_render
+          response.should_not submit_to(instance_eval(&route))
+        end
+      end
+      
       # Creates an expectation that the template uses Rails' <tt>form_for</tt> to generate
       # the proper form action and method to create or update the specified object.
       # 
@@ -533,6 +545,29 @@ module LuckySneaks
         it "should not render :partial => '#{name}'" do
           template.should_not_receive(:render).with(hash_including(:partial => name))
           do_render
+        end
+      end
+      
+      # Sets <tt>@the_template</tt> (for use in <tt>do_render</tt>) using the current 
+      # example group description. Example:
+      # 
+      # describe "users/index.haml.erb" do
+      #   use_template_from_describe!
+      #   # ...
+      # end
+      # 
+      # This is equivalent to setting <tt>@the_template = "users/index.haml.erb"</tt>
+      # in a before block.
+      def use_describe_for_template!
+        template_name = self.description_text
+        if File.exists?(File.join(RAILS_ROOT, "app/views", template_name))
+          before(:each) do
+            @the_template = template_name
+          end
+        else
+          error_message = "You called use_describe_for_template! "
+          error_message << "but 'app/views/#{template_name}' does not exist. "
+          raise NameError, error_message
         end
       end
     end
