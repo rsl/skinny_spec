@@ -100,7 +100,8 @@ module LuckySneaks
               :all
             end
           end
-          create_ar_class_expectation name, :find, argument, options
+          find_method = options.delete(:method) || :find
+          create_ar_class_expectation name, find_method, argument, options
           eval_request
         end
       end
