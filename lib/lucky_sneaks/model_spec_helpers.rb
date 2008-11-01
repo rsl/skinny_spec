@@ -318,6 +318,19 @@ module LuckySneaks
         end
       end
       
+      # Creates an expectation that new instances of the model being spec'd 
+      # should initialise the specified attributes with a default value.
+      # 
+      #  it_should_default_attributes :status => 'new'
+      #
+      def it_should_default_attributes(hash_attribute_values)
+        hash_attribute_values.each_pair do |a,v|
+          it "should default #{a} attribute to #{v}" do
+            class_or_instance.new.send(a).should == v
+          end
+        end
+      end
+      
       # Creates an expectation that the current model being spec'd <tt>validates_presence_of</tt>
       # the specified attribute. Takes an optional custom message to match the one in the model's
       # validation.
