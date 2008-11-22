@@ -380,7 +380,7 @@ module LuckySneaks
       # does not provide all the attributes needed to create a valid record.
       def it_should_validate_uniqueness_of(attribute, message = default_error_message(:taken))
         it "should validate uniqueness of #{attribute}" do
-          previous_instance = class_for(self.class.description_text).create!(valid_attributes)
+          previous_instance = instance.class.create!(valid_attributes)
           instance.attributes = valid_attributes
           instance.errors_on(attribute).should include(message)
           previous_instance.destroy
@@ -393,7 +393,7 @@ module LuckySneaks
       # <tt>:if/:unless</tt>).
       def it_should_not_validate_uniqueness_of(attribute, message = default_error_message(:taken))
         it "should not validate uniqueness of #{attribute}" do
-          previous_instance = class_for(self.class.description_text).create!(valid_attributes)
+          previous_instance = instance.class.create!(valid_attributes)
           instance.attributes = valid_attributes
           instance.errors_on(attribute).should_not include(message)
           previous_instance.destroy
