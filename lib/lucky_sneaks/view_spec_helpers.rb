@@ -552,7 +552,7 @@ module LuckySneaks
       # example group description. Example:
       # 
       # describe "users/index.haml.erb" do
-      #   use_template_from_describe!
+      #   use_describe_for_template!
       #   # ...
       # end
       # 
