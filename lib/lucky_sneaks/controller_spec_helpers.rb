@@ -338,9 +338,9 @@ module LuckySneaks
         end
       end
 
-      # Creates an expectation that the specified collection (<tt>flash</tt> or <tt>session</tt>)
-      # contains the specified key and value. To specify that the collection should be set
-      # to <tt>nil</tt>, specify the value as :nil instead.
+      # Creates an expectation that the specified collection (<tt>flash</tt>, <tt>session</tt>,
+      # <tt>params</tt>, <tt>cookies</tt>) contains the specified key and value. To specify that
+      # the collection should be set to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set(collection, key, value = nil, &block)
         it "should set #{collection}[:#{key}]" do
           # Allow flash.now[:foo] to remain in the flash
@@ -391,6 +391,17 @@ module LuckySneaks
       # Wraps <tt>it_should_set :params, :nil</tt>.
       def it_should_not_set_params(name)
         it_should_set :param, :nil
+      end
+      
+      # Wraps <tt>it_should_set :cookies</tt>. To specify that the collection should be set
+      # to <tt>nil</tt>, specify the value as :nil instead.
+      def it_should_set_cookies(name, value = nil, &block)
+        it_should_set :cookies, name, value, &block
+      end
+      
+      # Wraps <tt>it_should_set :cookies, :nil</tt>.
+      def it_should_not_set_cookies(name)
+        it_should_set :cookies, :nil
       end
       
       # Wraps the various <tt>it_should_render_<i>foo</i></tt> methods:
