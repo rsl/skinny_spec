@@ -365,6 +365,11 @@ module LuckySneaks
       def it_should_set_flash(name, value = nil, &block)
         it_should_set :flash, name, value, &block
       end
+      
+      # Wraps <tt>it_should_set :flash, :nil</tt>.
+      def it_should_not_set_flash(name)
+        it_should_set :flash, :nil
+      end
 
       # Wraps <tt>it_should_set :session</tt>. To specify that the collection should be set
       # to <tt>nil</tt>, specify the value as :nil instead.
@@ -372,10 +377,20 @@ module LuckySneaks
         it_should_set :session, name, value, &block
       end
       
+      # Wraps <tt>it_should_set :session, :nil</tt>.
+      def it_should_not_set_session(name)
+        it_should_set :session, :nil
+      end
+      
       # Wraps <tt>it_should_set :params</tt>. To specify that the collection should be set
       # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_params(name, value = nil, &block)
         it_should_set :params, name, value, &block
+      end
+      
+      # Wraps <tt>it_should_set :params, :nil</tt>.
+      def it_should_not_set_params(name)
+        it_should_set :param, :nil
       end
       
       # Wraps the various <tt>it_should_render_<i>foo</i></tt> methods:
