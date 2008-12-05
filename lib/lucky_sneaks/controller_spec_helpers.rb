@@ -368,7 +368,7 @@ module LuckySneaks
       
       # Wraps <tt>it_should_set :flash, :nil</tt>.
       def it_should_not_set_flash(name)
-        it_should_set :flash, :nil
+        it_should_set :flash, name, :nil
       end
 
       # Wraps <tt>it_should_set :session</tt>. To specify that the collection should be set
@@ -379,7 +379,7 @@ module LuckySneaks
       
       # Wraps <tt>it_should_set :session, :nil</tt>.
       def it_should_not_set_session(name)
-        it_should_set :session, :nil
+        it_should_set :session, name, :nil
       end
       
       # Wraps <tt>it_should_set :params</tt>. To specify that the collection should be set
@@ -390,7 +390,7 @@ module LuckySneaks
       
       # Wraps <tt>it_should_set :params, :nil</tt>.
       def it_should_not_set_params(name)
-        it_should_set :param, :nil
+        it_should_set :params, name, :nil
       end
       
       # Wraps <tt>it_should_set :cookies</tt>. To specify that the collection should be set
@@ -401,7 +401,7 @@ module LuckySneaks
       
       # Wraps <tt>it_should_set :cookies, :nil</tt>.
       def it_should_not_set_cookies(name)
-        it_should_set :cookies, :nil
+        it_should_set :cookies, name, :nil
       end
       
       # Wraps the various <tt>it_should_render_<i>foo</i></tt> methods:
