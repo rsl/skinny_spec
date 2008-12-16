@@ -8,7 +8,7 @@ module LuckySneaks
     def class_for(name)
       name.to_s.constantize
     rescue NameError
-      name.to_s.classify.constantize
+      name.to_s.pluralize.classify.constantize
       # Let any other error rise!
     end
 
