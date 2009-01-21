@@ -565,7 +565,7 @@ module LuckySneaks
           end
         else
           error_message = "You called use_describe_for_template! "
-          error_message << "but 'app/views/#{description_text}' does not exist. "
+          error_message << "but 'app/views/#{self_description_text}' does not exist. "
           raise NameError, error_message
         end
       end
