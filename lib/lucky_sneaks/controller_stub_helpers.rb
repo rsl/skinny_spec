@@ -97,6 +97,9 @@ module LuckySneaks # :nodoc:
     # <b>:format</b>:: Format of the request. Used to only add <tt>to_xml</tt> and 
     #                  <tt>to_json</tt> when actually needed.
     # <b>:stub</b>::   Additional methods to stub on the instances
+    # <b>:current_object</b>:: If set to true, <tt>find</tt> will set <tt>params[:id]</tt>
+    #                          using the <tt>id</tt> of the <tt>mock_model</tt> instance
+    #                          and use that value as an argument when stubbing <tt>find</tt>
     # 
     # Any additional options will be passed as arguments to <tt>find</tt>.You will want
     # to make sure to pass those arguments to the <tt>it_should_find</tt> spec as well.
@@ -120,7 +123,7 @@ module LuckySneaks # :nodoc:
         if find_method = options.delete(:find_method)
           klass.stub!(find_method).and_return(member)
         else
-        # Stubbing string and non-string just to be safe
+          # Stubbing string and non-string just to be safe
           klass.stub!(:find).with(member.id).and_return(member)
           klass.stub!(:find).with(member.id.to_s).and_return(member)
           unless options.empty?
