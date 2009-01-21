@@ -2,6 +2,17 @@ module LuckySneaks
   # These methods are mostly just called internally by various other spec helper
   # methods but you're welcome to use them as needed in your own specs.
   module CommonSpecHelpers
+    # Stubs out Time.now and returns value to use when comparing it. Example:
+    # 
+    #   time_now = stub_time_now
+    #   @foo.some_method_that_resets_updated_at
+    #   @foo.updated_at.should == time_now
+    def stub_time_now
+      returning Time.now do |now|
+        Time.stub!(:now).and_return(now)
+      end
+    end
+    
     # Returns class for the specified name. Example:
     # 
     #   class_for("foo") # => Foo
