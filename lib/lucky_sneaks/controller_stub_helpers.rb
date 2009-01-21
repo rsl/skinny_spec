@@ -134,6 +134,9 @@ module LuckySneaks # :nodoc:
       end
     end
     
+    # <b>Note:</b> Use of this method with :child options (to mock
+    # association) is deprecated. Please use <tt>stub_association</tt>.
+    # 
     # Same as <tt>stub_find_one</tt> but setups the instance as the parent
     # of the specified association. Example:
     # 
@@ -149,10 +152,13 @@ module LuckySneaks # :nodoc:
     #     @comments = @document.comments.find(:all)
     #   end
     def stub_parent(klass, options = {})
-      offspring = options.delete(:child)
       returning stub_find_one(klass, options) do |member|
         params[klass.name.foreign_key] = member.id
-        member.stub!(offspring).and_return(class_for(offspring))
+        if offspring = options.delete(:child)
+          puts "stub_parent with :child option has been marked for deprecation"
+          puts "please use stub_association to create the mock instead"
+          member.stub!(offspring).and_return(class_for(offspring))
+        end
       end
     end
     
@@ -189,6 +195,20 @@ module LuckySneaks # :nodoc:
     def stub_formatted(object, format)
       return unless format
       object.stub!("to_#{format}").and_return("#{object.class} formatted as #{format}")
+    end
+    
+    # Creates a mock object representing an association proxy, stubs the appropriate 
+    # method on the parent object and returns that association proxy.
+    # Accepts the following option:
+    # 
+    # <b>:stub</b>::   Additional methods to stub on the mock proxy object
+    def stub_association(object, association, options = {})
+      # I know options isn't implemented anywhere
+      object_name = instance_variables.select{|name| instance_variable_get(name) == object}
+      returning mock("Association proxy for #{object_name}.#{association}") do |proxy|
+        stub_out proxy, options[:stub] if options[:stub]
+        object.stub!(association).and_return(proxy)
+      end
     end
     
   private
