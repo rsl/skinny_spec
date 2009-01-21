@@ -168,8 +168,8 @@ module LuckySneaks
     def do_render
       if @the_template
         render @the_template
-      elsif File.exists?(File.join(RAILS_ROOT, "app/views", self.class.description_text))
-        render self.class.description_text
+      elsif File.exists?(File.join(RAILS_ROOT, "app/views", class_description_text))
+        render class_description_text
       else
         error_message = "Cannot determine template for render. "
         error_message << "Please define @the_template in the before block "
@@ -559,14 +559,13 @@ module LuckySneaks
       # This is equivalent to setting <tt>@the_template = "users/index.haml.erb"</tt>
       # in a before block.
       def use_describe_for_template!
-        template_name = self.description_text
-        if File.exists?(File.join(RAILS_ROOT, "app/views", template_name))
+        if File.exists?(File.join(RAILS_ROOT, "app/views", description_text))
           before(:each) do
-            @the_template = template_name
+            @the_template = description_text
           end
         else
           error_message = "You called use_describe_for_template! "
-          error_message << "but 'app/views/#{template_name}' does not exist. "
+          error_message << "but 'app/views/#{description_text}' does not exist. "
           raise NameError, error_message
         end
       end

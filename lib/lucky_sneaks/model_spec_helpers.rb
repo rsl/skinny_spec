@@ -195,11 +195,11 @@ module LuckySneaks
     
   private
     def class_or_instance
-      @model_spec_class_or_instance ||= class_for(self.class.description_text) || instance
+      @model_spec_class_or_instance ||= class_for(class_description_text) || instance
     end
     
     def instance
-      @model_spec_instance ||= instance_for(self.class.description_text)
+      @model_spec_instance ||= instance_for(class_description_text)
     end
     
     # These methods are designed to be used at the example group [read: "describe"] level

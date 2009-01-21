@@ -42,5 +42,27 @@ module LuckySneaks
         end
       end
     end
+    
+    # Returns class description text
+    def class_description_text
+      if self.class.respond_to?(:description_text)
+        # Old school
+        self.class.description_text
+      else
+        # New school
+        self.class.description
+      end
+    end
+    
+    # Returns description text
+    def description_text
+      if respond_to?(:description_text)
+        # Old school
+        description_text
+      else
+        # New school
+        description
+      end
+    end
   end
 end
