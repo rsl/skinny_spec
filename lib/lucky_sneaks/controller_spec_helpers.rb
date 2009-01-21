@@ -43,7 +43,7 @@ module LuckySneaks
       args = []
       unless options.delete(:only_method)
         args << argument unless argument.nil?
-        args << hash_including(options) unless options.blank?
+        args << hash_including(options) unless options.empty?
       end
       method = options.delete(:find_method) if options[:find_method]
       if args.empty?
@@ -260,7 +260,7 @@ module LuckySneaks
       # isn't the right helper method and you should write out the two expectations separately.
       def it_should_find_and_assign(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_assign name
         end
       end
@@ -323,7 +323,7 @@ module LuckySneaks
       # instance is found but not saved, just use <tt>it_should_find_and_assign</tt>.
       def it_should_find_and_update(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_update name
         end
       end
@@ -333,7 +333,7 @@ module LuckySneaks
       # isn't the right helper method and you should write out the two expectations separately.
       def it_should_find_and_destroy(*names)
         names.each do |name|
-          it_should_find name
+          it_should_find name, :only_method => true
           it_should_destroy name
         end
       end
