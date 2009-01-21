@@ -559,9 +559,9 @@ module LuckySneaks
       # This is equivalent to setting <tt>@the_template = "users/index.haml.erb"</tt>
       # in a before block.
       def use_describe_for_template!
-        if File.exists?(File.join(RAILS_ROOT, "app/views", description_text))
+        if File.exists?(File.join(RAILS_ROOT, "app/views", self_description_text))
           before(:each) do
-            @the_template = description_text
+            @the_template = self_description_text
           end
         else
           error_message = "You called use_describe_for_template! "

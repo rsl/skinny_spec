@@ -66,7 +66,7 @@ module LuckySneaks
     end
     
     # Returns description text
-    def description_text
+    def self_description_text
       if respond_to?(:description_text)
         # Old school
         description_text
