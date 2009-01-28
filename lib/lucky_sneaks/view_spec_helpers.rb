@@ -37,7 +37,8 @@ module LuckySneaks
     #   <textarea name="foo[bar]"></textarea>
     def allow_editing(instance, attribute)
       instance_name = instance.class.name.underscore.downcase
-      if instance.send(attribute).is_a?(Time)
+      column = instance.column_for_attribute(attribute)
+      if column && [Date, Time].include?(column.klass)
         have_tag(
           "input[name='#{instance_name}[#{attribute}]'],
           select[name=?]", /#{instance_name}\[#{attribute}\(.*\)\]/
