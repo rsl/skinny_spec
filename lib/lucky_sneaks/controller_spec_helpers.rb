@@ -342,7 +342,7 @@ module LuckySneaks
       # <tt>params</tt>, <tt>cookies</tt>) contains the specified key and value. To specify that
       # the collection should be set to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set(collection, key, value = nil, &block)
-        it "should set #{collection}[:#{key}]" do
+        it "should set #{collection}[:#{key}]#{' with ' + value.inspect if value}" do
           # Allow flash.now[:foo] to remain in the flash
           flash.stub!(:sweep) if collection == :flash
           eval_request
