@@ -267,4 +267,4 @@ rspec_on_rails_on_crack[http://github.com/technoweenie/rspec_on_rails_on_crack/t
 Also thanks and props to Hampton Catlin and Nathan Weizenbaum for the lovely and imminently useable
 Haml and make_resourceful. Also also praises and glory to David Chelimsky and the Rspec crew.
 
-Also thanks to Don Petersen for his suggestions and fixes.
+Also thanks to Don Petersen, Nicolas Mérouze, Mikkel Malmberg, and Brandan Lennox for their suggestions and fixes.
