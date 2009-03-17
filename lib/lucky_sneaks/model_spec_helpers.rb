@@ -338,7 +338,27 @@ module LuckySneaks
           instance.errors_on(attribute).should_not include(message)
         end
       end
-      
+            
+      # Creates an expectation that the current model being spec'd <tt>validates_inclusion_of</tt>
+      # the specified attribute. Takes an optional custom message to match the one in the model's
+      # validation.     
+      def it_should_validate_inclusion_of(attribute, options = {}, message = default_error_message(:inclusion))
+       it "should validate #{attribute} is in #{options[:in].to_s}" do
+         # We specifically do not try to go below the range on String and character ranges because that problem set is unpredictable. 
+         lower  = options[:in].first.respond_to?(:-) ? options[:in].first - 0.0001 : nil
+         higher = options[:in].last.succ 
+         
+         instance.send "#{attribute}=", lower
+         instance.errors_on(attribute).should include(message)
+
+         instance.send "#{attribute}=", higher
+         instance.errors_on(attribute).should include(message)
+
+         instance.send "#{attribute}=", (lower+higher)/2
+         instance.errors_on(attribute).should_not include(message)
+       end
+     end
+
       # Creates an expectation that the current model being spec'd <tt>validates_numericality_of</tt>
       # the specified attribute. Takes an optional custom message to match the one in the model's
       # validation.
