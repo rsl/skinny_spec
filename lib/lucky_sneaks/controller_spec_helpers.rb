@@ -65,6 +65,14 @@ module LuckySneaks
     # These methods are designed to be used at the example group [read: "describe"] level
     # to simplify and DRY up common expectations.
     module ExampleGroupMethods
+
+      def create_status_expectation(status)
+        it "should respond with #{status}" do
+          eval_request
+          response.status.should == status
+        end
+      end
+
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.find</tt>.
       # Examples:
       # 
