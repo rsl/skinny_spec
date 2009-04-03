@@ -75,5 +75,9 @@ module LuckySneaks
         description
       end
     end
+    
+    def described_type
+      self.class.described_type
+    end
   end
 end
