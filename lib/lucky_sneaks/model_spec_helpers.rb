@@ -437,7 +437,7 @@ module LuckySneaks
       # valid for the specified attribute. This is most likely used with <tt>validates_format_of</tt>
       # but there's nothing saying it couldn't be another validation.
       def it_should_accept_as_valid(attribute, *values)
-        values.each do |value|
+        values.flatten.each do |value|
           value_inspect = case value
             when String : "'#{value}'"
             when NilClass : "nil"
@@ -457,7 +457,7 @@ module LuckySneaks
       # spec'ing the actual error message.
       def it_should_not_accept_as_valid(attribute, *values)
         options = values.extract_options!
-        values.each do |value|
+        values.flatten.each do |value|
           value_inspect = case value
             when String : "'#{value}'"
             when NilClass : "nil"
