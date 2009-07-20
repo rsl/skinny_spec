@@ -204,7 +204,7 @@ module LuckySneaks # :nodoc:
     # <b>:stub</b>::   Additional methods to stub on the mock proxy object
     def stub_association(object, association, options = {})
       # I know options isn't implemented anywhere
-      object_name = instance_variables.select{|name| instance_variable_get(name) == object}
+      object_name = non_framework_instance_variables.select{|name| instance_variable_get(name) == object}
       returning mock("Association proxy for #{object_name}.#{association}") do |proxy|
         stub_out proxy, options[:stub] if options[:stub]
         object.stub!(association).and_return(proxy)
@@ -232,6 +232,15 @@ module LuckySneaks # :nodoc:
         object.stub!(method).and_return(return_value ? false : true)
       else
         object.stub!(method).with(hash_including(params)).and_return(return_value ? false : true)
+      end
+    end
+    
+    def non_framework_instance_variables
+      instance_variables.reject do |name|
+        %w{
+          @_backtrace @_implementation @_proxy @_result @fixture_cache @loaded_fixtures
+          @controller @method_name @request @response
+        }.include?(name)
       end
     end
   end
