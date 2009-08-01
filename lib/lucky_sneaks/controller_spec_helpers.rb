@@ -65,7 +65,6 @@ module LuckySneaks
     # These methods are designed to be used at the example group [read: "describe"] level
     # to simplify and DRY up common expectations.
     module ExampleGroupMethods
-
       def create_status_expectation(status)
         it "should respond with #{status}" do
           eval_request
