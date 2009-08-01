@@ -185,8 +185,6 @@ module LuckySneaks
     # matchers which can also be used on the example level [read: within an "it" block]. See
     # LuckySneaks::ViewSpecHelpers for more information.
     module ExampleGroupLevelMethods
-      include LuckySneaks::CommonSpecHelpers
-      
       # Creates an expectation which calls <tt>submit_to</tt> on the response
       # from rendering the template. See that method for more details.
       # 
