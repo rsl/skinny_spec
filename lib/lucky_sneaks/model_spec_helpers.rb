@@ -439,8 +439,8 @@ module LuckySneaks
       def it_should_accept_as_valid(attribute, *values)
         values.flatten.each do |value|
           value_inspect = case value
-            when String : "'#{value}'"
-            when NilClass : "nil"
+            when String then "'#{value}'"
+            when NilClass then "nil"
             else value
           end
           it "should accept #{value_inspect} as a valid #{attribute}" do
@@ -459,8 +459,8 @@ module LuckySneaks
         options = values.extract_options!
         values.flatten.each do |value|
           value_inspect = case value
-            when String : "'#{value}'"
-            when NilClass : "nil"
+            when String then "'#{value}'"
+            when NilClass then "nil"
             else value
           end
           it "should not accept #{value_inspect} as a valid #{attribute}" do
