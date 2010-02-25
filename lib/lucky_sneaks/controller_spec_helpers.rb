@@ -6,12 +6,12 @@ module LuckySneaks
     include LuckySneaks::CommonSpecHelpers
     include LuckySneaks::ControllerRequestHelpers
     include LuckySneaks::ControllerStubHelpers
-    
+
     def self.included(base)
       base.extend ExampleGroupMethods
       base.extend ControllerRequestHelpers::ExampleGroupMethods
     end
-    
+
     # Evaluates the specified block for each of the RESTful controller methods.
     # This is useful to spec that all controller methods redirect when no user is
     # logged in.
@@ -37,7 +37,7 @@ module LuckySneaks
         block.call
       end
     end
-    
+
   private
     def create_ar_class_expectation(name, method, argument = nil, options = {})
       args = []
@@ -52,7 +52,7 @@ module LuckySneaks
         class_for(name).should_receive(method).with(*args).and_return(instance_for(name))
       end
     end
-    
+
     def create_positive_ar_instance_expectation(name, method, *args)
       instance = instance_for(name)
       if args.empty?
@@ -61,7 +61,7 @@ module LuckySneaks
         instance.should_receive(method).with(*args).and_return(true)
       end
     end
-    
+
     # These methods are designed to be used at the example group [read: "describe"] level
     # to simplify and DRY up common expectations.
     module ExampleGroupMethods
@@ -74,7 +74,7 @@ module LuckySneaks
 
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.find</tt>.
       # Examples:
-      # 
+      #
       #   it_should_find :foos                                      # => Foo.should_receive(:find).with(:all)
       #   it_should_find :foos, :all                                # An explicit version of the above
       #   it_should_find :foos, :conditions => {:foo => "bar"}      # => Foo.should_receive(:find).with(:all, :conditions => {"foo" => "bar"}
@@ -83,7 +83,8 @@ module LuckySneaks
       #   it_should_find :foo, :params => "id"                      # => Foo.should_receive(:find).with(params[:id].to_s)
       #   it_should_find :foo, 2                                    # => Foo.should_receive(:find).with("2")
       #   it_should_find :foo, "joe", :method => :find_by_name      # => Foo.should_recieve(:find_by_name).with("joe")
-      # 
+      #   it_should_find :foo, :method => :all, :no_args => true    # => Foo.should_receive(:all).with(no_args)
+      #
       # <b>Note:</b> All params (key and value) will be strings if they come from a form element and are handled
       # internally with this expectation.
       def it_should_find(name, *args)
@@ -99,7 +100,9 @@ module LuckySneaks
           argument = if param = params[options.delete(:params)]
             param.to_s
           else
-            if args.first
+            if options.delete(:no_args)
+              nil
+            elsif args.first
               args.first
             elsif (instance = instance_variable_get("@#{name}")).is_a?(ActiveRecord::Base)
               instance.id.to_s
@@ -112,7 +115,7 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Negative version of <tt>it_should_find</tt>. This creates an expectation that
       # the class never receives <tt>find</tt> at all.
       def it_should_not_find(name)
@@ -131,10 +134,10 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base.new</tt>.
       # Takes optional <tt>params</tt> for the initialization arguments. Example
-      # 
+      #
       #   it_should_initialize :foo                  # => Foo.should_receive(:new)
       #   it_should_initialize :foo, :params => :bar # => Foo.should_receive(:new).with(params[:bar])
       #   it_should_initialize :foo, :bar => "baz"   # => Foo.should_receive(:new).with(:bar => "baz")
@@ -144,7 +147,7 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Negative version of <tt>it_should_initialize</tt>. This creates an expectation
       # that the class never recieves <tt>new</tt> at all.
       def it_should_not_initialize(name)
@@ -153,12 +156,12 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#save</tt> on the
       # named instance. Example:
       #
       #   it_should_save :foo # => @foo.should_receive(:save).and_return(true)
-      # 
+      #
       # <b>Note:</b> This helper should not be used to spec a failed <tt>save</tt> call. Use <tt>it_should_assign</tt>
       # instead, to verify that the instance is captured in an instance variable for the inevitable re-rendering
       # of the form template.
@@ -168,7 +171,7 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Negative version of <tt>it_should_update</tt>. This creates an expectation
       # that the instance never receives <tt>save</tt> at all.
       def it_should_not_save(name)
@@ -177,14 +180,14 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#update_attributes</tt>
       # on the named instance. Takes optional argument for <tt>params</tt> to specify in the
       # expectation. Examples:
       #
       #   it_should_update :foo                  # => @foo.should_receive(:update_attributes).and_return(true)
       #   it_should_update :foo, :params => :bar # => @foo.should_receive(:update_attributes).with(params[:bar]).and_return(true)
-      # 
+      #
       # <b>Note:</b> This helper should not be used to spec a failed <tt>update_attributes</tt> call. Use
       # <tt>it_should_assign</tt> instead, to verify that the instance is captured in an instance variable
       # for the inevitable re-rendering of the form template.
@@ -194,7 +197,7 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Negative version of <tt>it_should_update</tt>. This creates an expectation
       # that the instance never receives <tt>update_attributes</tt> at all.
       def it_should_not_update(name)
@@ -203,12 +206,12 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Creates an expectation that the controller method calls <tt>ActiveRecord::Base#destroy</tt> on the named
       # instance. Example:
-      # 
+      #
       #   it_should_destroy :foo # => @foo.should_receive(:destroy).and_return(true)
-      # 
+      #
       # <b>Note:</b> This helper should not be used to spec a failed <tt>destroy</tt> call. Use
       # <tt>it_should_assign</tt> instead, if you need to verify that the instance is captured in an instance
       # variable if it is re-rendered somehow. This is probably a really edge use case.
@@ -218,7 +221,7 @@ module LuckySneaks
           eval_request
         end
       end
-      
+
       # Negative version of <tt>it_should_destroy</tt>. This creates an expectation
       # that the instance never receives <tt>destroy</tt> at all.
       def it_should_not_destroy(name)
@@ -227,16 +230,16 @@ module LuckySneaks
           eval_request
         end
       end
-      
-      # Creates expectation[s] that the controller method should assign the specified 
+
+      # Creates expectation[s] that the controller method should assign the specified
       # instance variables along with any specified values. Examples:
-      # 
+      #
       #   it_should_assign :foo               # => assigns[:foo].should == @foo
       #   it_should_assign :foo => "bar"      # => assigns[:foo].should == "bar"
       #   it_should_assign :foo => :nil       # => assigns[:foo].should be_nil
       #   it_should_assign :foo => :not_nil   # => assigns[:foo].should_not be_nil
       #   it_should_assign :foo => :undefined # => controller.send(:instance_variables).should_not include("@foo")
-      # 
+      #
       # Very special thanks to Rick Olsen for the basis of this code. The only reason I even
       # redefine it at all is purely an aesthetic choice for specs like "it should foo"
       # over ones like "it foos".
@@ -251,7 +254,7 @@ module LuckySneaks
           end
         end
       end
-      
+
       # Essentially shorthand for <tt>it_should_assign name => :nil</tt>. This method can take multiple
       # instance variable names, creating this shorthand for each name. See the docs for
       # <tt>it_should_assign</tt> for more information.
@@ -261,7 +264,7 @@ module LuckySneaks
           it_should_assign name => :nil
         end
       end
-      
+
       # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_assign</tt>
       # for simple cases. If you need more control over the parameters of the find, this
       # isn't the right helper method and you should write out the two expectations separately.
@@ -271,9 +274,9 @@ module LuckySneaks
           it_should_assign name
         end
       end
-      
+
       # Negative version of <tt>it_should_find_and_assign</tt>. This creates an
-      # expectation that the class never receives <tt>find</tt> at all and that 
+      # expectation that the class never receives <tt>find</tt> at all and that
       # no matching instance variable is ever created.
       def it_should_not_find_and_assign(*names)
         names.each do |name|
@@ -281,11 +284,11 @@ module LuckySneaks
           it_should_assign name => :nil
         end
       end
-      
+
       # Wraps the separate expectations <tt>it_should_initialize</tt> and <tt>it_should_assign</tt>
       # for simple cases. If you need more control over the parameters of the initialization, this
       # isn't the right helper method and you should write out the two expectations separately.
-      # 
+      #
       # <b>Note:</b> This method is used for controller methods like <tt>new</tt>, where the instance
       # is initialized without being saved (this includes failed <tt>create</tt> requests).
       # If you want to spec that the controller method successfully saves the instance,
@@ -296,9 +299,9 @@ module LuckySneaks
           it_should_assign name
         end
       end
-      
+
       # Negative version of <tt>it_should_initialize_and_assign</tt>. This creates an
-      # expectation that the class never receives <tt>new</tt> at all and that 
+      # expectation that the class never receives <tt>new</tt> at all and that
       # no matching instance variable is ever created.
       def it_should_not_initialize_and_assign(*names)
         names.each do |name|
@@ -306,11 +309,11 @@ module LuckySneaks
           it_should_assign name => :nil
         end
       end
-      
+
       # Wraps the separate expectations <tt>it_should_initialize</tt> and <tt>it_should_save</tt>
       # for simple cases. If you need more control over the parameters of the initialization, this
       # isn't the right helper method and you should write out the two expectations separately.
-      # 
+      #
       # <b>Note:</b> This method is used for controller methods like <tt>create</tt>, where the instance
       # is initialized and successfully saved. If you want to spec that the instance is created
       # but not saved, just use <tt>it_should_initialize_and_assign</tt>.
@@ -320,11 +323,11 @@ module LuckySneaks
           it_should_save name
         end
       end
-      
+
       # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_update</tt>
       # for simple cases. If you need more control over the parameters of the find, this
       # isn't the right helper method and you should write out the two expectations separately.
-      # 
+      #
       # <b>Note:</b> This method is used for controller methods like <tt>update</tt>, where the
       # instance is loaded from the database and successfully saved. If you want to spec that the
       # instance is found but not saved, just use <tt>it_should_find_and_assign</tt>.
@@ -334,7 +337,7 @@ module LuckySneaks
           it_should_update name
         end
       end
-      
+
       # Wraps the separate expectations <tt>it_should_find</tt> and <tt>it_should_destroy</tt>
       # for simple cases. If you need more control over the parameters of the find, this
       # isn't the right helper method and you should write out the two expectations separately.
@@ -366,13 +369,13 @@ module LuckySneaks
           end
         end
       end
-      
+
       # Wraps <tt>it_should_set :flash</tt>. To specify that the collection should be set
       # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_flash(name, value = nil, &block)
         it_should_set :flash, name, value, &block
       end
-      
+
       # Wraps <tt>it_should_set :flash, :nil</tt>.
       def it_should_not_set_flash(name)
         it_should_set :flash, name, :nil
@@ -383,34 +386,34 @@ module LuckySneaks
       def it_should_set_session(name, value = nil, &block)
         it_should_set :session, name, value, &block
       end
-      
+
       # Wraps <tt>it_should_set :session, :nil</tt>.
       def it_should_not_set_session(name)
         it_should_set :session, name, :nil
       end
-      
+
       # Wraps <tt>it_should_set :params</tt>. To specify that the collection should be set
       # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_params(name, value = nil, &block)
         it_should_set :params, name, value, &block
       end
-      
+
       # Wraps <tt>it_should_set :params, :nil</tt>.
       def it_should_not_set_params(name)
         it_should_set :params, name, :nil
       end
-      
+
       # Wraps <tt>it_should_set :cookies</tt>. To specify that the collection should be set
       # to <tt>nil</tt>, specify the value as :nil instead.
       def it_should_set_cookies(name, value = nil, &block)
         it_should_set :cookies, name, value, &block
       end
-      
+
       # Wraps <tt>it_should_set :cookies, :nil</tt>.
       def it_should_not_set_cookies(name)
         it_should_set :cookies, name, :nil
       end
-      
+
       # Wraps the various <tt>it_should_render_<i>foo</i></tt> methods:
       # <tt>it_should_render_template</tt>, <tt>it_should_render_partial</tt>,
       # <tt>it_should_render_xml</tt>, <tt>it_should_render_json</tt>,
@@ -421,7 +424,7 @@ module LuckySneaks
 
       # Creates an expectation that the controller method renders the specified template.
       # Accepts the following options which create additional expectations.
-      # 
+      #
       #   <tt>:content_type</tt>:: Creates an expectation that the Content-Type header for the response
       #                            matches the one specified
       #   <tt>:status</tt>::       Creates an expectation that the HTTP status for the response
@@ -434,10 +437,10 @@ module LuckySneaks
         end
         create_content_type_expectation(options[:content_type]) if options[:content_type]
       end
-      
+
       # Creates an expectation that the controller method renders the specified partial.
       # Accepts the following options which create additional expectations.
-      # 
+      #
       #   <tt>:content_type</tt>:: Creates an expectation that the Content-Type header for the response
       #                            matches the one specified
       #   <tt>:status</tt>::       Creates an expectation that the HTTP status for the response
@@ -453,7 +456,7 @@ module LuckySneaks
 
       # Creates an expectation that the controller method renders the specified record via <tt>to_xml</tt>.
       # Accepts the following options which create additional expectations.
-      # 
+      #
       #   <tt>:content_type</tt>:: Creates an expectation that the Content-Type header for the response
       #                            matches the one specified
       #   <tt>:status</tt>::       Creates an expectation that the HTTP status for the response
@@ -464,7 +467,7 @@ module LuckySneaks
 
       # Creates an expectation that the controller method renders the specified record via <tt>to_json</tt>.
       # Accepts the following options which create additional expectations.
-      # 
+      #
       #   <tt>:content_type</tt>:: Creates an expectation that the Content-Type header for the response
       #                            matches the one specified
       #   <tt>:status</tt>::       Creates an expectation that the HTTP status for the response
@@ -476,7 +479,7 @@ module LuckySneaks
       # Called internally by <tt>it_should_render_xml</tt> and <tt>it_should_render_json</tt>
       # but should not really be called much externally unless you have defined your own
       # formats with a matching <tt>to_foo</tt> method on the record.
-      # 
+      #
       # Which is probably never.
       def it_should_render_formatted(format, record = nil, options = {}, &block)
         create_status_expectation options[:status] if options[:status]
@@ -502,7 +505,7 @@ module LuckySneaks
         create_content_type_expectation(options[:content_type]) if options[:content_type]
       end
 
-      # Creates an expectation that the controller method returns a blank page. You'd already 
+      # Creates an expectation that the controller method returns a blank page. You'd already
       # know when and why to use this so I'm not typing it out.
       def it_should_render_nothing(options = {})
         create_status_expectation options[:status] if options[:status]
@@ -512,11 +515,11 @@ module LuckySneaks
           end
         end
       end
-      
+
       # Creates an expectation that the controller method redirects to the specified destination. Example:
-      # 
+      #
       #   it_should_redirect_to { foos_url }
-      # 
+      #
       # <b>Note:</b> This method takes a block to evaluate the route in the example
       # context rather than the example group context.
       def it_should_redirect_to(hint = nil, &route)
@@ -528,7 +531,7 @@ module LuckySneaks
           response.should redirect_to(instance_eval(&route))
         end
       end
-      
+
       # Negative version of <tt>it_should_redirect_to</tt>.
       def it_should_not_redirect_to(hint = nil, &route)
         if hint.nil? && route.respond_to?(:to_ruby)
@@ -539,7 +542,7 @@ module LuckySneaks
           response.should_not redirect_to(instance_eval(&route))
         end
       end
-      
+
       # Creates an expectation that the controller method redirects back to the previous page
       def it_should_redirect_to_referer
         it "should redirect to the referring page" do
@@ -549,7 +552,7 @@ module LuckySneaks
         end
       end
       alias it_should_redirect_to_referrer it_should_redirect_to_referer
-      
+
     private
       def it_should_assign_instance_variable(name, value)
         expectation_proc = case value
